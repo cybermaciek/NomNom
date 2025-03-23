@@ -28,7 +28,7 @@ import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-
+import androidx.compose.foundation.text.BasicTextField
 
 //Todo: zrobić aby trzymac Set<String> z ID przepisów w ViewModel
 //Todo: po kliknięciu serca — przepis trafia do ulubionych (później można to zsynchronizować z Roomem lub serwerem)
@@ -82,16 +82,37 @@ class RecipeListScreen : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Pole wyszukiwania
-            OutlinedTextField(
+
+            BasicTextField(
                 value = search,
                 onValueChange = { search = it },
-                placeholder = { Text("Search...") },
                 singleLine = true,
-                shape = RoundedCornerShape(15.dp),
+                decorationBox = { innerTextField ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (search.isBlank()) {
+                            Text("Search...", color = Color.Gray, modifier = Modifier.weight(1f))
+                        } else {
+                            innerTextField()
+                        }
+
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "Szukaj",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             )
+
 
             Spacer(modifier = Modifier.height(12.dp))
 

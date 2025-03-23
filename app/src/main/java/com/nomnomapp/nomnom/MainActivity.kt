@@ -35,38 +35,6 @@ class MainActivity : ComponentActivity() {
     fun DebugMenuScreen() {
         val context = LocalContext.current
         context.startActivity(Intent(context, HomeScreen::class.java))
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(24.dp),
-//            verticalArrangement = Arrangement.spacedBy(16.dp)
-//        ) {
-//            Text("Ekrany testowe", style = MaterialTheme.typography.headlineSmall)
-//
-//
-//            Button(onClick = {
-//                context.startActivity(Intent(context, ShoppingListScreen::class.java))
-//            }) {
-//                Text("Shopping List Activity")
-//            }
-//
-//            Button(onClick = {
-//                context.startActivity(Intent(context, RecipeListScreen::class.java))}) {
-//                Text("Recipes Activity")
-//            }
-//
-//            Button(onClick = {}) {
-//                Text("Onboarding Activity")
-//            }
-//
-//
-//            Button(onClick = {}) {
-//                Text("Profile Activity")
-//            }
-//
-//
-//
-//        }
     }
 }
 
