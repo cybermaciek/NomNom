@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,11 +26,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
@@ -61,6 +69,7 @@ class ShoppingListScreen : ComponentActivity() {
         toBuyItems: List<String>,
         recentItems: List<String>
     ) {
+        var search by remember { mutableStateOf("") }
 
         Column(
             modifier = Modifier
@@ -83,16 +92,50 @@ class ShoppingListScreen : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Pole dodawania
-            Row(
+            BasicTextField(
+                value = search,
+                onValueChange = { search = it },
+                singleLine = true,
+                maxLines = 1,
+                decorationBox = { innerTextField ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (search.isBlank()) {
+                                Text(
+                                    text = "Search...",
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    maxLines = 1
+                                )
+                            }
+                            innerTextField()
+                        }
+
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "Szukaj",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 14.sp
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(8.dp))
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Add product...", color = Color.Gray, modifier = Modifier.weight(1f))
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add icon", tint = MaterialTheme.colorScheme.onBackground)
-            }
+                    .height(50.dp)
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 

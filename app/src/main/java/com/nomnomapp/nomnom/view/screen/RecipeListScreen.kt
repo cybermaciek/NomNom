@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -28,7 +29,7 @@ import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-import androidx.compose.foundation.text.BasicTextField
+
 
 //Todo: zrobić aby trzymac Set<String> z ID przepisów w ViewModel
 //Todo: po kliknięciu serca — przepis trafia do ulubionych (później można to zsynchronizować z Roomem lub serwerem)
@@ -81,23 +82,32 @@ class RecipeListScreen : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pole wyszukiwania
-
             BasicTextField(
                 value = search,
                 onValueChange = { search = it },
                 singleLine = true,
+                maxLines = 1,
                 decorationBox = { innerTextField ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (search.isBlank()) {
-                            Text("Search...", color = Color.Gray, modifier = Modifier.weight(1f))
-                        } else {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (search.isBlank()) {
+                                Text(
+                                    text = "Search...",
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    maxLines = 1
+                                )
+                            }
                             innerTextField()
                         }
 
@@ -108,6 +118,10 @@ class RecipeListScreen : ComponentActivity() {
                         )
                     }
                 },
+                textStyle = LocalTextStyle.current.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 14.sp
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
