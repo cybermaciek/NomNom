@@ -82,6 +82,7 @@ class RecipeListScreen : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            //Wyszukiwarka
             BasicTextField(
                 value = search,
                 onValueChange = { search = it },
