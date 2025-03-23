@@ -76,7 +76,7 @@ class HomeScreen : ComponentActivity() {
                 Row(modifier = Modifier.padding(top = 10.dp)) {
                     Text(buildAnnotatedString {
                         withStyle(style = SpanStyle(color = colorOnBackground)) {
-                            append("Witaj, ")
+                            append("Hello, ")
                         }
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = colorOrange)) {
                             append(name)
@@ -119,7 +119,7 @@ class HomeScreen : ComponentActivity() {
 
                         )
                         Text(
-                            text = "Lista zakupów",
+                            text = "Shopping List",
                             color = colorBackground,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -153,7 +153,7 @@ class HomeScreen : ComponentActivity() {
 
                         )
                         Text(
-                            text = "Przepisy",
+                            text = "Recipes",
                             color = colorBackground,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -178,14 +178,14 @@ class HomeScreen : ComponentActivity() {
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Ustawienia",
+                            contentDescription = "Settings icon",
                             tint = colorBackground,
                             modifier = Modifier
                                 .padding(end = 10.dp)
                                 .size(36.dp)
                         )
                         Text(
-                            text = "Ustawienia",
+                            text = "Settings",
                             color = colorBackground,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp

@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,8 +49,8 @@ class ShoppingListScreen : ComponentActivity() {
     @Composable
     fun ShoppingListScreenPreview() {
         //TYMCZASOWA DEFINCJA LISTY DO ZAKUPU
-        val toBuy = listOf("Jabłko", "Sok pomarańczowy", "Ketchup")
-        val recent = listOf("Ziemniaki", "Pierś z kurczaka", "Chleb", "Ser", "Jaja")
+        val toBuy = listOf("Apple", "Orange juice", "Ketchup")
+        val recent = listOf("Potatoes", "Chicken breast", "Bread", "Cheese", "Eggs")
 
         ShoppingListScreenView(toBuyItems = toBuy, recentItems = recent)
     }
@@ -74,9 +75,9 @@ class ShoppingListScreen : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Wróć", tint = MaterialTheme.colorScheme.onBackground)
-                Text("Lista zakupów", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Icon(imageVector = Icons.Default.Settings, contentDescription = "Ustawienia", tint = MaterialTheme.colorScheme.onBackground)
+                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+                Text("Shopping List", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -89,15 +90,15 @@ class ShoppingListScreen : ComponentActivity() {
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Dodaj produkt...", color = Color.Gray, modifier = Modifier.weight(1f))
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Dodaj", tint = MaterialTheme.colorScheme.onBackground)
+                Text("Add product...", color = Color.Gray, modifier = Modifier.weight(1f))
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add icon", tint = MaterialTheme.colorScheme.onBackground)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Do kupienia
             if (toBuyItems.isNotEmpty()) {
-                Text("Do kupienia", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+                Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     toBuyItems.forEach { item ->
@@ -105,13 +106,13 @@ class ShoppingListScreen : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable(onClick = {})
-                                .background(Color(0xFF00796B), shape = RoundedCornerShape(8.dp))
+                                .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(item, color = Color.White)
-                            Icon(imageVector = Icons.Default.Close, contentDescription = "Usuń", tint = Color.White)
+                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
                         }
                     }
                 }
@@ -121,7 +122,7 @@ class ShoppingListScreen : ComponentActivity() {
 
             // Ostatnie zakupy
             if (recentItems.isNotEmpty()) {
-                Text("Ostatnie zakupy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+                Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     recentItems.forEach { item ->
@@ -129,13 +130,13 @@ class ShoppingListScreen : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable(onClick = {})
-                                .background(Color.Gray, shape = RoundedCornerShape(8.dp))
+                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(item, color = Color.White)
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Dodaj", tint = Color.White)
+                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
                         }
                     }
                 }

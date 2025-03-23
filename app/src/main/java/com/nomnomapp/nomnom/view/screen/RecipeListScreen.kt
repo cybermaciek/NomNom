@@ -74,9 +74,9 @@ class RecipeListScreen : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Wróć", tint = MaterialTheme.colorScheme.onBackground)
-                Text("Przepisy", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Ustawienia", tint = MaterialTheme.colorScheme.onBackground)
+                Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+                Text("Recipes", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -85,9 +85,9 @@ class RecipeListScreen : ComponentActivity() {
             OutlinedTextField(
                 value = search,
                 onValueChange = { search = it },
-                placeholder = { Text("Szukaj...") },
+                placeholder = { Text("Search...") },
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
@@ -97,8 +97,8 @@ class RecipeListScreen : ComponentActivity() {
 
             // Przycisk Ulubione i Historia
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterButton(text = "Ulubione", icon = Icons.Outlined.Favorite)
-                FilterButton(text = "Historia", icon = Icons.Outlined.History)
+                FilterButton(text = "Favourites", icon = Icons.Outlined.Favorite)
+                FilterButton(text = "History", icon = Icons.Outlined.History)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -133,7 +133,7 @@ class RecipeListScreen : ComponentActivity() {
             shape = RoundedCornerShape(50),
             modifier = Modifier.height(40.dp)
         ) {
-            Icon(icon, contentDescription = text, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = text, modifier = Modifier.size(15.dp))
             Spacer(modifier = Modifier.width(6.dp))
             Text(text, fontSize = 14.sp)
         }
@@ -164,7 +164,7 @@ class RecipeListScreen : ComponentActivity() {
                 ) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Ulubione",
+                        contentDescription = "Favourites icon",
                         tint = Color.Red
                     )
                 }
