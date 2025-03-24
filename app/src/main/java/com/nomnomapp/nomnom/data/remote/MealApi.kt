@@ -1,5 +1,6 @@
-package com.nomnomapp.nomnom.model.network
+package com.nomnomapp.nomnom.data.remote
 
+import com.nomnomapp.nomnom.data.remote.dto.MealResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

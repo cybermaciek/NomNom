@@ -1,4 +1,4 @@
-package com.nomnomapp.nomnom.model.network
+package com.nomnomapp.nomnom.data.remote.dto
 
 import com.squareup.moshi.Json
 

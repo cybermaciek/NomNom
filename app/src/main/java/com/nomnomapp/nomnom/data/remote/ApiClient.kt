@@ -1,4 +1,4 @@
-package com.nomnomapp.nomnom.model.network
+package com.nomnomapp.nomnom.data.remote
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

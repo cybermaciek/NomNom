@@ -1,7 +1,7 @@
 package com.nomnomapp.nomnom.data.repository
 
+import com.nomnomapp.nomnom.data.remote.ApiClient
 import com.nomnomapp.nomnom.model.Recipe
-import com.nomnomapp.nomnom.model.network.ApiClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
