@@ -42,6 +42,7 @@ class HomeScreen : ComponentActivity() {
         }
     }
 
+    
     @Composable
     fun menuPreviewFunction(modifier: Modifier = Modifier) {
         val name: String = "Maciuś"
