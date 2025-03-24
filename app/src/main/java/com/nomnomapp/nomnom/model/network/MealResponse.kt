@@ -13,7 +13,7 @@ data class MealDto(
     @Json(name = "strCategory") val category: String,
     @Json(name = "strArea") val area: String,
     @Json(name = "strInstructions") val instructions: String,
-    // Składniki są rozdzielone - można później parsować do listy
+    // skladniki są rozdzielone - można później parsować do listy
     @Json(name = "strIngredient1") val ingredient1: String?,
     @Json(name = "strIngredient2") val ingredient2: String?,
     @Json(name = "strIngredient3") val ingredient3: String?,

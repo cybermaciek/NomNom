@@ -1,4 +1,4 @@
-package com.nomnomapp.nomnom.view.ui.theme
+package com.nomnomapp.nomnom.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

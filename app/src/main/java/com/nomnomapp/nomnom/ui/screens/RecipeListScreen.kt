@@ -1,4 +1,4 @@
-package com.nomnomapp.nomnom.view.screen
+package com.nomnomapp.nomnom.ui.screens
 
 import android.content.res.Configuration
 import android.os.Bundle

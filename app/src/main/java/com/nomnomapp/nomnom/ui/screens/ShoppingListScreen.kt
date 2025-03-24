@@ -1,4 +1,4 @@
-package com.nomnomapp.nomnom.view.screen
+package com.nomnomapp.nomnom.ui.screens
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -29,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.LocalTextStyle

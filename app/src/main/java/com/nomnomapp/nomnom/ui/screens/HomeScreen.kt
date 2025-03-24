@@ -1,4 +1,4 @@
-package com.nomnomapp.nomnom.view.screen
+package com.nomnomapp.nomnom.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,8 +9,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-import com.nomnomapp.nomnom.view.ui.theme.*
 
 
 class HomeScreen : ComponentActivity() {

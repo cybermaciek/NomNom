@@ -10,7 +10,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.nomnomapp.nomnom.view.ui.theme.*
 
 private val LightColorScheme = lightColorScheme(
     background = appWhite,

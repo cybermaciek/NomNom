@@ -11,7 +11,7 @@ object ApiClient {
     private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"
 
     private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory()) // <-- TO JEST WAŻNE!
+        .add(KotlinJsonAdapterFactory())
         .build()
 
     private val logging = HttpLoggingInterceptor().apply {
