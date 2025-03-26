@@ -37,199 +37,190 @@ import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 
 
 
-class RecipeListScreen : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NomNomTheme {
-                RecipeListScreenContent()
-            }
-        }
+
+
+@Composable
+fun RecipeListScreen(viewModel: RecipeListViewModel = viewModel()) {
+    val recipes by viewModel.recipes.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.searchRecipes("Chicken")
     }
 
-    @Composable
-    fun RecipeListScreenContent(viewModel: RecipeListViewModel = viewModel()) {
-        val recipes by viewModel.recipes.collectAsState()
+    RecipeListScreenView(recipes)
+}
 
-        LaunchedEffect(Unit) {
-            viewModel.searchRecipes("Chicken")
-        }
+@Composable
+fun RecipeListScreenView(recipes: List<Recipe>) {
+    var search by remember { mutableStateOf("") }
+    val favoriteIds = remember { mutableStateListOf<String>() }
 
-        RecipeListScreenView(recipes)
-    }
-
-    @Composable
-    fun RecipeListScreenView(recipes: List<Recipe>) {
-        var search by remember { mutableStateOf("") }
-        val favoriteIds = remember { mutableStateListOf<String>() }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
-                .padding(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+    ) {
+        // Pasek górny
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Pasek górny
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
-                Text("Recipes", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //Wyszukiwarka
-            BasicTextField(
-                value = search,
-                onValueChange = { search = it },
-                singleLine = true,
-                maxLines = 1,
-                decorationBox = { innerTextField ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            if (search.isBlank()) {
-                                Text(
-                                    text = "Search...",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    maxLines = 1
-                                )
-                            }
-                            innerTextField()
-                        }
-
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = "Szukaj",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                },
-                textStyle = LocalTextStyle.current.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            )
-
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Przycisk Ulubione i Historia
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterButton(text = "Favourites", icon = Icons.Outlined.Favorite)
-                FilterButton(text = "History", icon = Icons.Outlined.History)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val filteredRecipes = recipes.filter {
-                it.title.contains(search, ignoreCase = true)
-            }
-
-            // Lista przepisów
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                items(filteredRecipes) { recipe ->
-                    RecipeCard(
-                        recipe = recipe,
-                        isFavorite = favoriteIds.contains(recipe.id),
-                        onFavoriteClick = {
-                            if (favoriteIds.contains(it.id)) {
-                                favoriteIds.remove(it.id)
-                            } else {
-                                favoriteIds.add(it.id)
-                            }
-                        }
-                    )
-                }
-            }
+            Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+            Text("Recipes", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
         }
-    }
 
-    @Composable
-    fun FilterButton(text: String, icon: ImageVector) {
-        OutlinedButton(
-            onClick = { },
-            shape = RoundedCornerShape(50),
-            modifier = Modifier.height(40.dp)
-        ) {
-            Icon(icon, contentDescription = text, modifier = Modifier.size(15.dp))
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(text, fontSize = 14.sp)
-        }
-    }
+        Spacer(modifier = Modifier.height(16.dp))
 
-    @Composable
-    fun RecipeCard(recipe: Recipe, isFavorite: Boolean, onFavoriteClick: (Recipe) -> Unit) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            ) {
-                Image(
-                    painter = rememberImagePainter(recipe.imageUrl),
-                    contentDescription = recipe.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
-                )
-
-                IconButton(
-                    onClick = { onFavoriteClick(recipe) },
+        //Wyszukiwarka
+        BasicTextField(
+            value = search,
+            onValueChange = { search = it },
+            singleLine = true,
+            maxLines = 1,
+            decorationBox = { innerTextField ->
+                Row(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.7f), shape = RoundedCornerShape(50))
+                        .fillMaxWidth()
+                        .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (search.isBlank()) {
+                            Text(
+                                text = "Search...",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                maxLines = 1
+                            )
+                        }
+                        innerTextField()
+                    }
+
                     Icon(
-                        imageVector = if (isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Favourites icon",
-                        tint = Color.Red
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "Szukaj",
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
+            },
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        )
+
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Przycisk Ulubione i Historia
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterButton(text = "Favourites", icon = Icons.Outlined.Favorite)
+            FilterButton(text = "History", icon = Icons.Outlined.History)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        val filteredRecipes = recipes.filter {
+            it.title.contains(search, ignoreCase = true)
+        }
+
+        // Lista przepisów
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            items(filteredRecipes) { recipe ->
+                RecipeCard(
+                    recipe = recipe,
+                    isFavorite = favoriteIds.contains(recipe.id),
+                    onFavoriteClick = {
+                        if (favoriteIds.contains(it.id)) {
+                            favoriteIds.remove(it.id)
+                        } else {
+                            favoriteIds.add(it.id)
+                        }
+                    }
+                )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = recipe.title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
-    }
-
-    @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
-    @Composable
-    fun LightmodePreview() {
-        NomNomTheme {
-            RecipeListScreenContent()
-        }
-    }
-
-    @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-    @Composable
-    fun DarkmodePreview() {
-        NomNomTheme {
-            RecipeListScreenContent()
         }
     }
 }
+
+@Composable
+fun FilterButton(text: String, icon: ImageVector) {
+    OutlinedButton(
+        onClick = { },
+        shape = RoundedCornerShape(50),
+        modifier = Modifier.height(40.dp)
+    ) {
+        Icon(icon, contentDescription = text, modifier = Modifier.size(15.dp))
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(text, fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun RecipeCard(recipe: Recipe, isFavorite: Boolean, onFavoriteClick: (Recipe) -> Unit) {
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp)
+                .clip(RoundedCornerShape(16.dp))
+        ) {
+            Image(
+                painter = rememberImagePainter(recipe.imageUrl),
+                contentDescription = recipe.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+
+            IconButton(
+                onClick = { onFavoriteClick(recipe) },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.7f), shape = RoundedCornerShape(50))
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = "Favourites icon",
+                    tint = Color.Red
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = recipe.title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
+//@Composable
+//fun LightmodePreview() {
+//    NomNomTheme {
+//        RecipeListScreenContent()
+//    }
+//}
+//
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
+//@Composable
+//fun DarkmodePreview() {
+//    NomNomTheme {
+//        RecipeListScreenContent()
+//    }
+//}

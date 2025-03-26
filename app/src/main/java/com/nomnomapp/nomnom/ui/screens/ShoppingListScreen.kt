@@ -41,166 +41,153 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 
-class ShoppingListScreen : ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NomNomTheme {
-                ShoppingListScreenPreview()
-            }
-        }
-    }
+@Composable
+fun ShoppingListScreen() {
+    //TYMCZASOWA DEFINCJA LISTY DO ZAKUPU
+    val toBuy = listOf("Apple", "Orange juice", "Ketchup")
+    val recent = listOf("Potatoes", "Chicken breast", "Bread", "Cheese", "Eggs")
 
-
-    @Composable
-    fun ShoppingListScreenPreview() {
-        //TYMCZASOWA DEFINCJA LISTY DO ZAKUPU
-        val toBuy = listOf("Apple", "Orange juice", "Ketchup")
-        val recent = listOf("Potatoes", "Chicken breast", "Bread", "Cheese", "Eggs")
-
-        ShoppingListScreenView(toBuyItems = toBuy, recentItems = recent)
-    }
+    ShoppingListScreenView(toBuyItems = toBuy, recentItems = recent)
+}
 
 
-    @Composable
-    fun ShoppingListScreenView(
-        toBuyItems: List<String>,
-        recentItems: List<String>
+@Composable
+fun ShoppingListScreenView(
+    toBuyItems: List<String>,
+    recentItems: List<String>
+) {
+    var search by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+
     ) {
-        var search by remember { mutableStateOf("") }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
-                .padding(16.dp)
-
+        // Pasek górny
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Pasek górny
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
-                Text("Shopping List", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
-            }
+            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+            Text("Shopping List", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // Pole dodawania
-            BasicTextField(
-                value = search,
-                onValueChange = { search = it },
-                singleLine = true,
-                maxLines = 1,
-                decorationBox = { innerTextField ->
+        // Pole dodawania
+        BasicTextField(
+            value = search,
+            onValueChange = { search = it },
+            singleLine = true,
+            maxLines = 1,
+            decorationBox = { innerTextField ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (search.isBlank()) {
+                            Text(
+                                text = "Search...",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                maxLines = 1
+                            )
+                        }
+                        innerTextField()
+                    }
+
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "Szukaj",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            },
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Do kupienia
+        if (toBuyItems.isNotEmpty()) {
+            Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                toBuyItems.forEach { item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .clickable(onClick = {})
+                            .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            if (search.isBlank()) {
-                                Text(
-                                    text = "Search...",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    maxLines = 1
-                                )
-                            }
-                            innerTextField()
-                        }
-
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = "Szukaj",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                },
-                textStyle = LocalTextStyle.current.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Do kupienia
-            if (toBuyItems.isNotEmpty()) {
-                Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
-                Spacer(modifier = Modifier.height(8.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    toBuyItems.forEach { item ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(onClick = {})
-                                .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(item, color = Color.White)
-                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
-                        }
+                        Text(item, color = Color.White)
+                        Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
                     }
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            // Ostatnie zakupy
-            if (recentItems.isNotEmpty()) {
-                Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
-                Spacer(modifier = Modifier.height(8.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    recentItems.forEach { item ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(onClick = {})
-                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(item, color = Color.White)
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
-                        }
+        // Ostatnie zakupy
+        if (recentItems.isNotEmpty()) {
+            Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                recentItems.forEach { item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = {})
+                            .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(item, color = Color.White)
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
                     }
                 }
             }
         }
     }
-    @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
-    @Composable
-    fun LightmodePreview() {
-        NomNomTheme {
-            ShoppingListScreenPreview()
-        }
-    }
-
-    @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-    @Composable
-    fun DarkmodePreview() {
-        NomNomTheme {
-            ShoppingListScreenPreview()
-        }
-    }
-
-
 }
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
+@Composable
+fun LightmodePreview() {
+    NomNomTheme {
+        ShoppingListScreen()
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
+@Composable
+fun DarkmodePreview() {
+    NomNomTheme {
+        ShoppingListScreen()
+    }
+}
+
 
