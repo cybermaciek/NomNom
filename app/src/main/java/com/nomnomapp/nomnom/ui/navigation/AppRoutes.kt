@@ -6,6 +6,7 @@ enum class Routes(val route: String) {
     SETTINGS("settings"),
     SHOPPING_LIST("shoppingList"),
     MEAL_DETAIL("mealDetail/{mealId}"),
+    CREATE_USER("createUser"),
     ADD_RECIPE("addRecipe");
 
     companion object {
