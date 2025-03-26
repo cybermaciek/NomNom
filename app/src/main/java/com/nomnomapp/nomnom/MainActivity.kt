@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.CREATE_USER.route
+                    startDestination = Routes.HOME.route
                 ) {
                     composable(Routes.HOME.route) {
                         HomeScreen(
@@ -49,13 +49,9 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    composable(Routes.CREATE_USER.route) {
-                        CreateUserScreen(
-                            onNavigateToHome = { navController.navigate(Routes.HOME.route) {
-                                popUpTo(Routes.CREATE_USER.route) { inclusive = true }
-                            } }
-                        )
-                    }
+
+
+
                     composable("settings") {
                         SettingsScreen()
                     }
@@ -74,8 +70,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(Routes.ADD_RECIPE.route) {
-                        AddRecipeScreen()
+                        AddRecipeScreen(
+                            navController = navController
+                        )
                     }
+
                 }
             }
         }
