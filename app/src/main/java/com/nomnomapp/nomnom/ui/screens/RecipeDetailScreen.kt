@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.NavController
 import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
@@ -33,7 +35,8 @@ import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 @Composable
 fun RecipeDetailScreen(
     mealId: String,
-    viewModel: RecipeDetailViewModel
+    viewModel: RecipeDetailViewModel,
+    navController: NavController // Dodaj parametr navController
 ) {
     val mealState by viewModel.mealState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -46,7 +49,11 @@ fun RecipeDetailScreen(
     MealDetailContent(
         meal = mealState,
         isLoading = isLoading,
-        errorMessage = errorMessage
+        errorMessage = errorMessage,
+        onBackClick = {
+            // Po kliknięciu strzałki cofamy się
+            navController.popBackStack()
+        }
     )
 }
 
@@ -54,14 +61,14 @@ fun RecipeDetailScreen(
 fun MealDetailContent(
     meal: Recipe?,
     isLoading: Boolean,
-    errorMessage: String?
+    errorMessage: String?,
+    onBackClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             isLoading -> {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
-
             errorMessage != null -> {
                 Text(
                     text = "Error: $errorMessage",
@@ -69,7 +76,6 @@ fun MealDetailContent(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-
             meal != null -> {
                 LazyColumn(
                     modifier = Modifier
@@ -90,17 +96,8 @@ fun MealDetailContent(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.matchParentSize()
                             )
-                            Icon(
-                                Icons.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .clickable { }
-                            )
                         }
                     }
-
                     item {
                         Text(
                             text = meal.title,
@@ -114,7 +111,6 @@ fun MealDetailContent(
                             textAlign = TextAlign.Center
                         )
                     }
-
                     item {
                         Row(
                             modifier = Modifier
@@ -132,7 +128,6 @@ fun MealDetailContent(
                         }
                         Divider()
                     }
-
                     item {
                         Text(
                             text = "Instructions",
@@ -149,7 +144,6 @@ fun MealDetailContent(
                         )
                         Divider(modifier = Modifier.padding(top = 16.dp))
                     }
-
                     item {
                         Text(
                             text = "Ingredients",
@@ -159,7 +153,6 @@ fun MealDetailContent(
                             modifier = Modifier.padding(16.dp)
                         )
                     }
-
                     items(meal.ingredients) { ingredient ->
                         Row(
                             modifier = Modifier
@@ -179,7 +172,6 @@ fun MealDetailContent(
                             )
                         }
                     }
-
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(
@@ -195,8 +187,23 @@ fun MealDetailContent(
                         Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
-            }
+                Box(
+                    modifier = Modifier
+                        .padding(16.dp, top =20.dp)
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                        .clickable { onBackClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
 
+            }
             else -> {
                 Text(
                     text = "No meal found",
@@ -207,8 +214,6 @@ fun MealDetailContent(
         }
     }
 }
-
-
 
 @Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO, name = "Light")
 @Composable
@@ -226,7 +231,7 @@ fun MealDetailContentLightPreview() {
             ),
             isLoading = false,
             errorMessage = null
-        )
+        ) {}
     }
 }
 
@@ -246,6 +251,6 @@ fun MealDetailContentDarkPreview() {
             ),
             isLoading = false,
             errorMessage = null
-        )
+        ) {}
     }
 }

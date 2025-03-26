@@ -41,13 +41,15 @@ class MainActivity : ComponentActivity() {
                         ShoppingListScreen()
                     }
 
-                    composable("recipes") {
+                    composable(Routes.RECIPES.route) {
                         RecipeListScreen(
+                            navController = navController,
                             onNavigateToMealDetail = { mealId ->
-                                navController.navigate("mealDetail/$mealId")
+                                navController.navigate(Routes.mealDetailRoute(mealId))
                             }
                         )
                     }
+
 
 
                     composable("settings") {
@@ -55,20 +57,18 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(
-                        route = "mealDetail/{mealId}",
-                        arguments = listOf(
-                            navArgument("mealId") { type = NavType.StringType }
-                        )
+                        route = Routes.MEAL_DETAIL.route,
+                        arguments = listOf(navArgument("mealId") { type = NavType.StringType })
                     ) {
                         val mealId = it.arguments?.getString("mealId") ?: ""
-                        // Pobieramy MealDetailViewModel
                         val viewModel: RecipeDetailViewModel = viewModel()
-                        // Wyświetlamy ekran detali z przekazanym mealId
                         RecipeDetailScreen(
                             mealId = mealId,
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            navController = navController
                         )
                     }
+
                 }
             }
         }

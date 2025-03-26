@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
 
 @Composable
 fun RecipeListScreen(
+    navController: NavController,
     onNavigateToMealDetail: (String) -> Unit,
     viewModel: RecipeListViewModel = viewModel()
 ) {
@@ -40,14 +42,17 @@ fun RecipeListScreen(
     }
     RecipeListScreenView(
         recipes = recipes,
-        onNavigateToMealDetail = onNavigateToMealDetail
+        onNavigateToMealDetail = onNavigateToMealDetail,
+        navController = navController
     )
+
 }
 
 @Composable
 fun RecipeListScreenView(
     recipes: List<Recipe>,
-    onNavigateToMealDetail: (String) -> Unit
+    onNavigateToMealDetail: (String) -> Unit,
+    navController: NavController
 ) {
     var search by remember { mutableStateOf("") }
     val favoriteIds = remember { mutableStateListOf<String>() }
@@ -63,21 +68,25 @@ fun RecipeListScreenView(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Outlined.ArrowBack,
-                contentDescription = "Back",
-                tint = MaterialTheme.colorScheme.onBackground
-            )
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                    .clickable { navController.popBackStack() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
             Text(
                 "Recipes",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
-            )
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -226,7 +235,7 @@ fun RecipeCard(
 @Composable
 fun Recipe_List_LightmodePreview() {
     NomNomTheme {
-        RecipeListScreen(onNavigateToMealDetail = {})
+        RecipeListScreen(onNavigateToMealDetail = {}, navController = NavController(LocalContext.current))
     }
 }
 
@@ -234,6 +243,6 @@ fun Recipe_List_LightmodePreview() {
 @Composable
 fun Recipe_List_DarkmodePreview() {
     NomNomTheme {
-        RecipeListScreen(onNavigateToMealDetail = {})
+        RecipeListScreen(onNavigateToMealDetail = {}, navController = NavController(LocalContext.current))
     }
 }

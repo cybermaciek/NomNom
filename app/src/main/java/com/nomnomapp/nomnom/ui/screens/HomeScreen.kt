@@ -189,22 +189,27 @@ fun HomeScreen(
 
 
 }
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
+@Composable
+fun Home_LightmodePreview() {
+    NomNomTheme {
+        HomeScreen(
+            onNavigateToRecipes = {},
+            onNavigateToSettings = {},
+            onNavigateToShoppingList = {}
+        )
+    }
+}
 
-//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
-//@Composable
-//fun Home_LightmodePreview() {
-//    NomNomTheme {
-//        HomeScreen()
-//    }
-//}
-//
-//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-//@Composable
-//fun Home_DarkmodePreview() {
-//    NomNomTheme {
-//        HomeScreen()
-//    }
-//}
-
-
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
+@Composable
+fun Home_DarkmodePreview() {
+    NomNomTheme {
+        HomeScreen(
+            onNavigateToRecipes = {},
+            onNavigateToSettings = {},
+            onNavigateToShoppingList = {}
+        )
+    }
+}
 
