@@ -27,4 +27,25 @@ class RecipeRepository {
             )
         } ?: emptyList()
     }
+    suspend fun getMealById(mealId: String): Recipe? = withContext(Dispatchers.IO) {
+        val response = api.lookupMealById(mealId)
+        // Zwracamy pierwszy posiłek (API zwraca listę, ale zazwyczaj 1-elementową).
+        response.meals?.firstOrNull()?.let { mealDto ->
+            Recipe(
+                id = mealDto.id,
+                title = mealDto.title,
+                imageUrl = mealDto.imageUrl,
+                category = mealDto.category,
+                area = mealDto.area,
+                instructions = mealDto.instructions,
+                ingredients = listOfNotNull(
+                    mealDto.ingredient1,
+                    mealDto.ingredient2,
+                    mealDto.ingredient3
+                    // w razie potrzeb dodaj więcej ingredientów
+                ).filter { it.isNotBlank() }
+            )
+        }
+    }
+
 }

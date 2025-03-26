@@ -167,7 +167,7 @@ fun ShoppingListScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(item, color = Color.White)
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.onBackground)
                     }
                 }
             }

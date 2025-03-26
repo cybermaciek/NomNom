@@ -10,4 +10,8 @@ interface MealApi {
 
     @GET("random.php")
     suspend fun getRandomMeal(): MealResponse
+
+    @GET("lookup.php")
+    suspend fun lookupMealById(@Query("i") mealId: String): MealResponse
+
 }
