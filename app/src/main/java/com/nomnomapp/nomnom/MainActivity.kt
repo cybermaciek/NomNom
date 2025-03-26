@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.HOME.route
+                    startDestination = Routes.CREATE_USER.route
                 ) {
                     composable(Routes.HOME.route) {
                         HomeScreen(
