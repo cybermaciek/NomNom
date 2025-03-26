@@ -50,8 +50,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-
-
                     composable("settings") {
                         SettingsScreen()
                     }
@@ -67,6 +65,10 @@ class MainActivity : ComponentActivity() {
                             viewModel = viewModel,
                             navController = navController
                         )
+                    }
+
+                    composable(Routes.ADD_RECIPE.route) {
+                        AddRecipeScreen()
                     }
 
                 }

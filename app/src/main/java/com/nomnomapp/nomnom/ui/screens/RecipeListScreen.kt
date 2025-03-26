@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.model.Recipe
+import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
 
@@ -57,7 +58,17 @@ fun RecipeListScreenView(
     var search by remember { mutableStateOf("") }
     val favoriteIds = remember { mutableStateListOf<String>() }
 
-    Scaffold(){ contentPadding ->
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Routes.ADD_RECIPE.route) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(Icons.Outlined.Add, contentDescription = "Add Recipe")
+            }
+        }
+    ) { contentPadding ->
         Column(
             modifier = Modifier
                 .padding(contentPadding)
