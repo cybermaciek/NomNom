@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.nomnomapp.nomnom.ui.screens.*
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-import com.nomnomapp.nomnom.viewmodel.MealDetailViewModel
+import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,9 +61,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val mealId = it.arguments?.getString("mealId") ?: ""
                         // Pobieramy MealDetailViewModel
-                        val viewModel: MealDetailViewModel = viewModel()
+                        val viewModel: RecipeDetailViewModel = viewModel()
                         // Wyświetlamy ekran detali z przekazanym mealId
-                        MealDetailScreen(
+                        RecipeDetailScreen(
                             mealId = mealId,
                             viewModel = viewModel
                         )

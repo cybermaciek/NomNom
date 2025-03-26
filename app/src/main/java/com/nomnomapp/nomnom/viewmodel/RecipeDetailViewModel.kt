@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class MealDetailViewModel(
+class RecipeDetailViewModel(
     private val repository: RecipeRepository = RecipeRepository()
 ) : ViewModel() {
 

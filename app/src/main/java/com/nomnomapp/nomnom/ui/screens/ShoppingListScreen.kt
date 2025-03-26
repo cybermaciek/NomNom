@@ -59,12 +59,11 @@ fun ShoppingListScreenView(
 ) {
     var search by remember { mutableStateOf("") }
 
-    Column(
+    Column( //TODO: zmienić na LazyColumn
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-
+            .padding(16.dp, top = 20.dp)
     ) {
         // Pasek górny
         Row(

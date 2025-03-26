@@ -2,6 +2,7 @@ package com.nomnomapp.nomnom.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,13 +25,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.model.Recipe
-import com.nomnomapp.nomnom.viewmodel.MealDetailViewModel
+import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 
+
 @Composable
-fun MealDetailScreen(
+fun RecipeDetailScreen(
     mealId: String,
-    viewModel: MealDetailViewModel
+    viewModel: RecipeDetailViewModel
 ) {
     val mealState by viewModel.mealState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -58,6 +60,7 @@ fun MealDetailContent(
             isLoading -> {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
+
             errorMessage != null -> {
                 Text(
                     text = "Error: $errorMessage",
@@ -65,33 +68,21 @@ fun MealDetailContent(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+
             meal != null -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(top = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
                     item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
-                            Text(
-                                text = meal.title,
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                            )
-                        }
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(300.dp)
+                                .height(400.dp)
                                 .clip(RoundedCornerShape(0.dp))
                         ) {
                             Image(
@@ -100,55 +91,91 @@ fun MealDetailContent(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.matchParentSize()
                             )
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .clickable(onClick = {})
+                                    .padding(horizontal = 16.dp)
+                            )
+                        }
+                        Text(
+                            text = meal.title,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Text(
+                                text = "Category: ${meal.category}",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            Text(
+                                text = "Area: ${meal.area}",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
                         }
                     }
+
                     item {
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Category: ${meal.category}",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = "Instructions",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp)
                         )
-                        Text(
-                            text = "Area: ${meal.area}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = meal.instructions,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                        Text(
-                            text = "Ingredients:",
-                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
+
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Ingredients",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
                     items(meal.ingredients) { ingredient ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp),
+                                .padding(horizontal = 16.dp)
+                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                                .padding(12.dp)
+                                .clickable(onClick = {}),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "• $ingredient",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground
+                            Text(ingredient, color = Color.White)
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add",
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
-                            OutlinedButton(
-                                onClick = { },
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                            ) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.onBackground)
-                            }
                         }
                     }
+
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(
@@ -157,10 +184,7 @@ fun MealDetailContent(
                                 .padding(horizontal = 16.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Button(
-                                onClick = { },
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-                            ) {
+                            Button(onClick = { }) {
                                 Text("Add all ingredients")
                             }
                         }
@@ -168,6 +192,7 @@ fun MealDetailContent(
                     }
                 }
             }
+
             else -> {
                 Text(
                     text = "No meal found",
@@ -178,6 +203,8 @@ fun MealDetailContent(
         }
     }
 }
+
+
 
 @Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO, name = "Light")
 @Composable

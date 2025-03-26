@@ -56,7 +56,7 @@ fun RecipeListScreenView(
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
-            .padding(16.dp)
+            .padding(16.dp, top = 20.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
