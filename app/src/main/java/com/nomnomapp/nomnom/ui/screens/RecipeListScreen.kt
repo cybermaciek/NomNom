@@ -74,14 +74,14 @@ fun RecipeListScreenView(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(RoundedCornerShape(50))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                        .background(MaterialTheme.colorScheme.background)
                         .clickable { navController.popBackStack() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.ArrowBack,
                         contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Text(
@@ -234,6 +234,7 @@ fun RecipeCard(
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground
         )
+        Divider(modifier = Modifier.padding(top = 4.dp))
     }
 }
 
