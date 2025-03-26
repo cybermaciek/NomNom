@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.model.Recipe
+import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
 
@@ -57,7 +58,17 @@ fun RecipeListScreenView(
     var search by remember { mutableStateOf("") }
     val favoriteIds = remember { mutableStateListOf<String>() }
 
-    Scaffold(){ contentPadding ->
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Routes.ADD_RECIPE.route) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(Icons.Outlined.Add, contentDescription = "Add Recipe")
+            }
+        }
+    ) { contentPadding ->
         Column(
             modifier = Modifier
                 .padding(contentPadding)
@@ -74,14 +85,14 @@ fun RecipeListScreenView(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(RoundedCornerShape(50))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                        .background(MaterialTheme.colorScheme.background)
                         .clickable { navController.popBackStack() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.ArrowBack,
                         contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Text(
@@ -234,6 +245,7 @@ fun RecipeCard(
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground
         )
+        Divider(modifier = Modifier.padding(top = 4.dp))
     }
 }
 

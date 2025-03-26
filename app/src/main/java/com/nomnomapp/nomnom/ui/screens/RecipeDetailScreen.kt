@@ -64,152 +64,158 @@ fun MealDetailContent(
     errorMessage: String?,
     onBackClick: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        when {
-            isLoading -> {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            }
-            errorMessage != null -> {
-                Text(
-                    text = "Error: $errorMessage",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-            meal != null -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentPadding = PaddingValues(bottom = 24.dp)
-                ) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(400.dp)
-                                .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-                        ) {
-                            Image(
-                                painter = rememberImagePainter(meal.imageUrl),
-                                contentDescription = meal.title,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.matchParentSize()
-                            )
-                        }
-                    }
-                    item {
-                        Text(
-                            text = meal.title,
-                            fontSize = 26.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp)
-                                .padding(horizontal = 16.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp, bottom = 16.dp)
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            AssistChip(onClick = {}, label = {
-                                Text("Category: ${meal.category}")
-                            })
-                            AssistChip(onClick = {}, label = {
-                                Text("Cuisine: ${meal.area}")
-                            })
-                        }
-                        Divider()
-                    }
-                    item {
-                        Text(
-                            text = "Instructions",
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                        Text(
-                            text = meal.instructions,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                        Divider(modifier = Modifier.padding(top = 16.dp))
-                    }
-                    item {
-                        Text(
-                            text = "Ingredients",
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    items(meal.ingredients) { ingredient ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
-                                .clickable(onClick = {})
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(ingredient, color = Color.White)
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Add",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            FilledTonalButton(onClick = { }) {
-                                Text("Add all ingredients")
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
+    Scaffold(){ contentPadding ->
+        Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding)
+            )
+        {
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
-                Box(
-                    modifier = Modifier
-                        .padding(16.dp, top =20.dp)
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
-                        .clickable { onBackClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.ArrowBack,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onSurface
+                errorMessage != null -> {
+                    Text(
+                        text = "Error: $errorMessage",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
+                meal != null -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background),
+                        contentPadding = PaddingValues(bottom = 24.dp)
+                    ) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(400.dp)
+                                    .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+                            ) {
+                                Image(
+                                    painter = rememberImagePainter(meal.imageUrl),
+                                    contentDescription = meal.title,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.matchParentSize()
+                                )
+                            }
+                        }
+                        item {
+                            Text(
+                                text = meal.title,
+                                fontSize = 26.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp)
+                                    .padding(horizontal = 16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp, bottom = 16.dp)
+                                    .padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                AssistChip(onClick = {}, label = {
+                                    Text("Category: ${meal.category}")
+                                })
+                                AssistChip(onClick = {}, label = {
+                                    Text("Cuisine: ${meal.area}")
+                                })
+                            }
+                            Divider()
+                        }
+                        item {
+                            Text(
+                                text = "Instructions",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                            Text(
+                                text = meal.instructions,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            Divider(modifier = Modifier.padding(top = 16.dp))
+                        }
+                        item {
+                            Text(
+                                text = "Ingredients",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                        items(meal.ingredients) { ingredient ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                                    .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                                    .clickable(onClick = {})
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(ingredient, color = Color.White)
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add",
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                FilledTonalButton(onClick = { }) {
+                                    Text("Add all ingredients")
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
+                            .clickable { onBackClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
 
-            }
-            else -> {
-                Text(
-                    text = "No meal found",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                }
+                else -> {
+                    Text(
+                        text = "No meal found",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
         }
     }

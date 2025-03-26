@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-
                     composable(Routes.CREATE_USER.route) {
                         CreateUserScreen(
                             onNavigateToHome = { navController.navigate(Routes.HOME.route) {
@@ -57,7 +56,6 @@ class MainActivity : ComponentActivity() {
                             } }
                         )
                     }
-
                     composable("settings") {
                         SettingsScreen()
                     }
@@ -73,6 +71,10 @@ class MainActivity : ComponentActivity() {
                             viewModel = viewModel,
                             navController = navController
                         )
+                    }
+
+                    composable(Routes.ADD_RECIPE.route) {
+                        AddRecipeScreen()
                     }
                 }
             }
