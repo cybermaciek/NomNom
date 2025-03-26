@@ -41,8 +41,15 @@ class RecipeRepository {
                 ingredients = listOfNotNull(
                     mealDto.ingredient1,
                     mealDto.ingredient2,
-                    mealDto.ingredient3
-                    // w razie potrzeb dodaj więcej ingredientów
+                    mealDto.ingredient3,
+                    mealDto.ingredient4,
+                    mealDto.ingredient5,
+                    mealDto.ingredient6,
+                    mealDto.ingredient7,
+                    mealDto.ingredient8,
+                    mealDto.ingredient9,
+                    mealDto.ingredient10,
+                    // w razie potrzeb dodac więcej ingredientów
                 ).filter { it.isNotBlank() }
             )
         }

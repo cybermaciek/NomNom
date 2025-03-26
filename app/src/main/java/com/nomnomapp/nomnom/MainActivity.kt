@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.screens.*
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
@@ -26,17 +27,17 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = "home"
+                    startDestination = Routes.HOME.route
                 ) {
-                    composable("home") {
+                    composable(Routes.HOME.route) {
                         HomeScreen(
-                            onNavigateToRecipes = { navController.navigate("recipes") },
-                            onNavigateToSettings = { navController.navigate("settings") },
-                            onNavigateToShoppingList = { navController.navigate("shoppingList") }
+                            onNavigateToRecipes = { navController.navigate(Routes.RECIPES.route) },
+                            onNavigateToSettings = { navController.navigate(Routes.SETTINGS.route) },
+                            onNavigateToShoppingList = { navController.navigate(Routes.SHOPPING_LIST.route)}
                         )
                     }
 
-                    composable("shoppingList") {
+                    composable(Routes.SHOPPING_LIST.route) {
                         ShoppingListScreen()
                     }
 

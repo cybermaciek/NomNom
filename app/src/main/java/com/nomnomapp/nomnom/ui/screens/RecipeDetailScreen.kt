@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import androidx.compose.ui.text.style.TextAlign
 import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
@@ -73,17 +74,15 @@ fun MealDetailContent(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(top = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(bottom = 16.dp)
+                        .background(MaterialTheme.colorScheme.background),
+                    contentPadding = PaddingValues(bottom = 24.dp)
                 ) {
                     item {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(400.dp)
-                                .clip(RoundedCornerShape(0.dp))
+                                .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
                         ) {
                             Image(
                                 painter = rememberImagePainter(meal.imageUrl),
@@ -91,79 +90,84 @@ fun MealDetailContent(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.matchParentSize()
                             )
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back",
-                                tint = MaterialTheme.colorScheme.onBackground,
+                            Icon(
+                                Icons.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White,
                                 modifier = Modifier
-                                    .clickable(onClick = {})
-                                    .padding(horizontal = 16.dp)
+                                    .padding(16.dp)
+                                    .clickable { }
                             )
                         }
+                    }
+
+                    item {
                         Text(
                             text = meal.title,
-                            fontSize = 20.sp,
+                            fontSize = 26.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp)
+                                .padding(horizontal = 16.dp),
+                            textAlign = TextAlign.Center
                         )
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ){
-                            Text(
-                                text = "Category: ${meal.category}",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                            Text(
-                                text = "Area: ${meal.area}",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, bottom = 16.dp)
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            AssistChip(onClick = {}, label = {
+                                Text("Category: ${meal.category}")
+                            })
+                            AssistChip(onClick = {}, label = {
+                                Text("Cuisine: ${meal.area}")
+                            })
                         }
+                        Divider()
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Instructions",
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(16.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = meal.instructions,
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
+                        Divider(modifier = Modifier.padding(top = 16.dp))
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Ingredients",
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(16.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
 
                     items(meal.ingredients) { ingredient ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
                                 .background(Color.Gray, shape = RoundedCornerShape(15.dp))
-                                .padding(12.dp)
-                                .clickable(onClick = {}),
+                                .clickable(onClick = {})
+                                .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -184,11 +188,11 @@ fun MealDetailContent(
                                 .padding(horizontal = 16.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Button(onClick = { }) {
+                            FilledTonalButton(onClick = { }) {
                                 Text("Add all ingredients")
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
             }
