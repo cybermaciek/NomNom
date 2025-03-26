@@ -57,116 +57,119 @@ fun RecipeListScreenView(
     var search by remember { mutableStateOf("") }
     val favoriteIds = remember { mutableStateListOf<String>() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
-            .padding(16.dp, top = 20.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    Scaffold(){ contentPadding ->
+        Column(
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+                .padding(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
-                    .clickable { navController.popBackStack() },
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            Text(
-                "Recipes",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            //TODO: Zastanowić sie nad sensem tej ikony lub dodać coś związanego z przepisami
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.onBackground
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        BasicTextField(
-            value = search,
-            onValueChange = { search = it },
-            singleLine = true,
-            maxLines = 1,
-            decorationBox = { innerTextField ->
-                Row(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Color.LightGray.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                        .clickable { navController.popBackStack() },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 8.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (search.isBlank()) {
-                            Text(
-                                text = "Search...",
-                                color = MaterialTheme.colorScheme.onBackground,
-                                maxLines = 1
-                            )
-                        }
-                        innerTextField()
-                    }
                     Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = "Search",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        imageVector = Icons.Outlined.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
-            },
-            textStyle = LocalTextStyle.current.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 14.sp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterButton(text = "Favourites", icon = Icons.Outlined.Favorite)
-            FilterButton(text = "History", icon = Icons.Outlined.History)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        val filteredRecipes = recipes.filter {
-            it.title.contains(search, ignoreCase = true)
-        }
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            items(filteredRecipes) { recipe ->
-                RecipeCard(
-                    recipe = recipe,
-                    isFavorite = favoriteIds.contains(recipe.id),
-                    onFavoriteClick = { clickedRecipe ->
-                        if (favoriteIds.contains(clickedRecipe.id)) {
-                            favoriteIds.remove(clickedRecipe.id)
-                        } else {
-                            favoriteIds.add(clickedRecipe.id)
-                        }
-                    },
-                    onCardClick = { clickedRecipe ->
-                        onNavigateToMealDetail(clickedRecipe.id)
-                    }
+                Text(
+                    "Recipes",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
+                //TODO: Zastanowić sie nad sensem tej ikony lub dodać coś związanego z przepisami
+                Icon(
+                    imageVector = Icons.Outlined.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            BasicTextField(
+                value = search,
+                onValueChange = { search = it },
+                singleLine = true,
+                maxLines = 1,
+                decorationBox = { innerTextField ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Color.LightGray.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (search.isBlank()) {
+                                Text(
+                                    text = "Search...",
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    maxLines = 1
+                                )
+                            }
+                            innerTextField()
+                        }
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "Search",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 14.sp
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterButton(text = "Favourites", icon = Icons.Outlined.Favorite)
+                FilterButton(text = "History", icon = Icons.Outlined.History)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            val filteredRecipes = recipes.filter {
+                it.title.contains(search, ignoreCase = true)
+            }
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                items(filteredRecipes) { recipe ->
+                    RecipeCard(
+                        recipe = recipe,
+                        isFavorite = favoriteIds.contains(recipe.id),
+                        onFavoriteClick = { clickedRecipe ->
+                            if (favoriteIds.contains(clickedRecipe.id)) {
+                                favoriteIds.remove(clickedRecipe.id)
+                            } else {
+                                favoriteIds.add(clickedRecipe.id)
+                            }
+                        },
+                        onCardClick = { clickedRecipe ->
+                            onNavigateToMealDetail(clickedRecipe.id)
+                        }
+                    )
+                }
             }
         }
     }

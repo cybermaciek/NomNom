@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +42,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(contentPadding)
                 .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
                 .padding(16.dp),
         ) {
             Row(
@@ -65,13 +67,14 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {/* TODO */},
                 colors = ButtonDefaults.buttonColors(containerColor = colorOrange) ,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
-                    .padding(top = 36.dp, bottom = 8.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
                     .height(60.dp)
             ) {

@@ -33,6 +33,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,114 +60,117 @@ fun ShoppingListScreenView(
 ) {
     var search by remember { mutableStateOf("") }
 
-    Column( //TODO: zmienić na LazyColumn
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
-            .padding(16.dp, top = 20.dp)
-    ) {
-        // Pasek górny
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
-            Text("Shopping List", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-            Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Pole dodawania
-        BasicTextField(
-            value = search,
-            onValueChange = { search = it },
-            singleLine = true,
-            maxLines = 1,
-            decorationBox = { innerTextField ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 8.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (search.isBlank()) {
-                            Text(
-                                text = "Search...",
-                                color = MaterialTheme.colorScheme.onBackground,
-                                maxLines = 1
-                            )
-                        }
-                        innerTextField()
-                    }
-
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = "Szukaj",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            },
-            textStyle = LocalTextStyle.current.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 14.sp
-            ),
+    Scaffold() { contentPadding ->
+        Column( //TODO: zmienić na LazyColumn
             modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        )
+                .padding(contentPadding)
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+            ) {
+            // Pasek górny
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+                Text("Shopping List", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
+            }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Do kupienia
-        if (toBuyItems.isNotEmpty()) {
-            Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                toBuyItems.forEach { item ->
+            // Pole dodawania
+            BasicTextField(
+                value = search,
+                onValueChange = { search = it },
+                singleLine = true,
+                maxLines = 1,
+                decorationBox = { innerTextField ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(onClick = {})
-                            .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                            .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(item, color = Color.White)
-                        Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (search.isBlank()) {
+                                Text(
+                                    text = "Search...",
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    maxLines = 1
+                                )
+                            }
+                            innerTextField()
+                        }
+
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "Szukaj",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 14.sp
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Do kupienia
+            if (toBuyItems.isNotEmpty()) {
+                Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(8.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    toBuyItems.forEach { item ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = {})
+                                .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(item, color = Color.White)
+                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
+                        }
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Ostatnie zakupy
-        if (recentItems.isNotEmpty()) {
-            Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                recentItems.forEach { item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = {})
-                            .background(Color.Gray, shape = RoundedCornerShape(15.dp))
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(item, color = Color.White)
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.onBackground)
+            // Ostatnie zakupy
+            if (recentItems.isNotEmpty()) {
+                Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(8.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    recentItems.forEach { item ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = {})
+                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(item, color = Color.White)
+                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.onBackground)
+                        }
                     }
                 }
             }
