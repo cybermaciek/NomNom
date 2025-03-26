@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.*
@@ -20,9 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.R
 import androidx.navigation.NavController
@@ -41,17 +43,6 @@ fun AddRecipeScreen(
     var imageUri by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Add Recipe") },
-                navigationIcon = {
-                    IconButton(onClick = { /* TODO: close screen */ }) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Close")
-                    }
-                }
-            )
-        },
-
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -62,122 +53,161 @@ fun AddRecipeScreen(
                 Icon(Icons.Outlined.Save, contentDescription = "Save")
             }
         }
-    ) { padding ->
+    ) { contentPadding ->
 
-        val defaultImage = R.drawable.recipe_placeholder
-        val imagePainter = rememberImagePainter(
-            data = imageUri ?: "",
-            builder = {
-                crossfade(true)
-                error(defaultImage)
-                placeholder(defaultImage)
-            }
-        )
-
-        LazyColumn(
-            contentPadding = padding,
+        Column(
             modifier = Modifier
+                .padding(contentPadding)
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .background(color = MaterialTheme.colorScheme.background)
+                .padding(16.dp)
         ) {
-            item {
+            // Custom back bar
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .clickable {
-                            // TODO: uruchom wybór zdjęcia
-                        }
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.background)
+                        .clickable { navController.popBackStack() },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = imagePainter,
-                        contentDescription = "Zdjęcie przepisu",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.matchParentSize()
+                    Icon(
+                        imageVector = Icons.Outlined.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
+                }
 
+                Text(
+                    "Add Recipe",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Spacer(modifier = Modifier.width(48.dp)) // for symmetry
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val defaultImage = R.drawable.recipe_placeholder
+            val imagePainter = rememberImagePainter(
+                data = imageUri ?: "",
+                builder = {
+                    crossfade(true)
+                    error(defaultImage)
+                    placeholder(defaultImage)
+                }
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 80.dp)
+            ) {
+                item {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.3f)),
-                        contentAlignment = Alignment.BottomCenter
+                            .fillMaxWidth()
+                            .height(300.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .clickable {
+                                // TODO: uruchom wybór zdjęcia
+                            }
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                        Image(
+                            painter = imagePainter,
+                            contentDescription = "Zdjęcie przepisu",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.matchParentSize()
+                        )
+
+                        Box(
                             modifier = Modifier
-                                .padding(bottom = 24.dp)
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.BottomCenter
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.PhotoCamera,
-                                contentDescription = "Dodaj zdjęcie",
-                                tint = Color.White,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Prześlij zdjęcie przepisu",
-                                color = Color.White,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .padding(bottom = 24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.PhotoCamera,
+                                    contentDescription = "Dodaj zdjęcie",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Prześlij zdjęcie przepisu",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
                 }
 
-            }
+                item {
+                    OutlinedTextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        label = { Text("Title") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    )
+                }
 
-            item {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-            }
+                item {
+                    OutlinedTextField(
+                        value = category,
+                        onValueChange = { category = it },
+                        label = { Text("Category") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-            item {
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    label = { Text("Category") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+                item {
+                    OutlinedTextField(
+                        value = area,
+                        onValueChange = { area = it },
+                        label = { Text("Cuisine / Area") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-            item {
-                OutlinedTextField(
-                    value = area,
-                    onValueChange = { area = it },
-                    label = { Text("Cuisine / Area") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+                item {
+                    OutlinedTextField(
+                        value = instructions,
+                        onValueChange = { instructions = it },
+                        label = { Text("Instructions") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        maxLines = 6
+                    )
+                }
 
-            item {
-                OutlinedTextField(
-                    value = instructions,
-                    onValueChange = { instructions = it },
-                    label = { Text("Instructions") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    maxLines = 6
-                )
-            }
-
-            item {
-                OutlinedTextField(
-                    value = ingredients,
-                    onValueChange = { ingredients = it },
-                    label = { Text("Ingredients (comma-separated)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                item {
+                    OutlinedTextField(
+                        value = ingredients,
+                        onValueChange = { ingredients = it },
+                        label = { Text("Ingredients (comma-separated)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }
@@ -198,4 +228,3 @@ fun Dark_AddRecipeScreenPreview() {
         AddRecipeScreen(navController = NavController(LocalContext.current))
     }
 }
-
