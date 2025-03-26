@@ -88,6 +88,12 @@ fun RecipeListScreenView(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )
+            //TODO: Zastanowić sie nad sensem tej ikony lub dodać coś związanego z przepisami
+            Icon(
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = "Settings",
+                tint = MaterialTheme.colorScheme.onBackground
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         BasicTextField(
