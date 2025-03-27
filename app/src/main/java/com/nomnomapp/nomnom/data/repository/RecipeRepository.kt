@@ -1,6 +1,6 @@
 package com.nomnomapp.nomnom.data.repository
 
-import com.nomnomapp.nomnom.data.remote.ApiClient
+import com.nomnomapp.nomnom.data.remote.*
 import com.nomnomapp.nomnom.model.Recipe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -53,6 +53,14 @@ class RecipeRepository {
                 ).filter { it.isNotBlank() }
             )
         }
+    }
+
+    suspend fun getCategories(): List<String> {
+        return api.getCategories().categories.map { it.name }
+    }
+
+    suspend fun getAreas(): List<String> {
+        return api.getAreas().areas.map { it.name }
     }
 
 }

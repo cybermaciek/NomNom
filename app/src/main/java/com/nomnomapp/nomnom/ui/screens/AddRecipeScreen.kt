@@ -46,6 +46,7 @@ fun AddRecipeScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier.padding(16.dp),
                 onClick = {
                     // TODO: save to local database
                     navController.popBackStack()

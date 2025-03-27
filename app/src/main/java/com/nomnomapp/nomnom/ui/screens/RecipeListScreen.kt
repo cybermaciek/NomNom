@@ -6,7 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +29,8 @@ import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
+import androidx.compose.foundation.lazy.items
+
 
 @Composable
 fun RecipeListScreen(
@@ -38,25 +39,43 @@ fun RecipeListScreen(
     viewModel: RecipeListViewModel = viewModel()
 ) {
     val recipes by viewModel.recipes.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.searchRecipes("Chicken")
+        viewModel.loadFilters()
     }
+
     RecipeListScreenView(
         recipes = recipes,
         onNavigateToMealDetail = onNavigateToMealDetail,
-        navController = navController
+        navController = navController,
+        viewModel = viewModel
     )
-
 }
 
 @Composable
 fun RecipeListScreenView(
     recipes: List<Recipe>,
     onNavigateToMealDetail: (String) -> Unit,
-    navController: NavController
+    navController: NavController,
+    viewModel: RecipeListViewModel
 ) {
     var search by remember { mutableStateOf("") }
     val favoriteIds = remember { mutableStateListOf<String>() }
+
+    val categories by viewModel.categories.collectAsState()
+    val areas by viewModel.areas.collectAsState()
+
+    var selectedCategory by remember { mutableStateOf("All") }
+    var selectedArea by remember { mutableStateOf("All") }
+    var showOnlyFavorites by remember { mutableStateOf(false) }
+
+    val filteredRecipes = recipes.filter { recipe ->
+        recipe.title.contains(search, ignoreCase = true) &&
+                (selectedCategory == "All" || recipe.category == selectedCategory) &&
+                (selectedArea == "All" || recipe.area == selectedArea) &&
+                (!showOnlyFavorites || favoriteIds.contains(recipe.id))
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -73,7 +92,7 @@ fun RecipeListScreenView(
             modifier = Modifier
                 .padding(contentPadding)
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
             Row(
@@ -96,47 +115,40 @@ fun RecipeListScreenView(
                     )
                 }
                 Text(
-                    "Recipes",
+                    text = "Recipes",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                //TODO: Zastanowić sie nad sensem tej ikony lub dodać coś związanego z przepisami
                 Icon(
                     imageVector = Icons.Outlined.Settings,
                     contentDescription = "Settings",
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             BasicTextField(
                 value = search,
                 onValueChange = { search = it },
                 singleLine = true,
-                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(Color.LightGray.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                textStyle = LocalTextStyle.current.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 14.sp
+                ),
                 decorationBox = { innerTextField ->
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Color.LightGray.copy(alpha = 0.1f),
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
+                        Box(Modifier.weight(1f)) {
                             if (search.isBlank()) {
-                                Text(
-                                    text = "Search...",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    maxLines = 1
-                                )
+                                Text("Search...", color = MaterialTheme.colorScheme.onBackground)
                             }
                             innerTextField()
                         }
@@ -146,56 +158,55 @@ fun RecipeListScreenView(
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                },
-                textStyle = LocalTextStyle.current.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                }
             )
+
             Spacer(modifier = Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterButton(text = "Favourites", icon = Icons.Outlined.Favorite)
-                FilterButton(text = "History", icon = Icons.Outlined.History)
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                item {
+                    FilterChip("Favourites", showOnlyFavorites) {
+                        showOnlyFavorites = !showOnlyFavorites
+                    }
+                }
+                item {
+                    FilterDropdown("Category", categories, selectedCategory) {
+                        selectedCategory = it
+                    }
+                }
+                item {
+                    FilterDropdown("Area", areas, selectedArea) {
+                        selectedArea = it
+                    }
+                }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
-            val filteredRecipes = recipes.filter {
-                it.title.contains(search, ignoreCase = true)
-            }
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+            LazyColumn {
                 items(filteredRecipes) { recipe ->
                     RecipeCard(
                         recipe = recipe,
                         isFavorite = favoriteIds.contains(recipe.id),
-                        onFavoriteClick = { clickedRecipe ->
-                            if (favoriteIds.contains(clickedRecipe.id)) {
-                                favoriteIds.remove(clickedRecipe.id)
+                        onFavoriteClick = { clicked ->
+                            if (favoriteIds.contains(clicked.id)) {
+                                favoriteIds.remove(clicked.id)
                             } else {
-                                favoriteIds.add(clickedRecipe.id)
+                                favoriteIds.add(clicked.id)
                             }
                         },
-                        onCardClick = { clickedRecipe ->
-                            onNavigateToMealDetail(clickedRecipe.id)
+                        onCardClick = { clicked ->
+                            onNavigateToMealDetail(clicked.id)
                         }
                     )
                 }
             }
-        }
-    }
-}
 
-@Composable
-fun FilterButton(text: String, icon: ImageVector) {
-    OutlinedButton(
-        onClick = { },
-        shape = RoundedCornerShape(50),
-        modifier = Modifier.height(40.dp)
-    ) {
-        Icon(icon, contentDescription = text, modifier = Modifier.size(15.dp))
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(text, fontSize = 14.sp)
+        }
     }
 }
 
@@ -206,9 +217,7 @@ fun RecipeCard(
     onFavoriteClick: (Recipe) -> Unit,
     onCardClick: (Recipe) -> Unit
 ) {
-    Column(
-        modifier = Modifier.clickable { onCardClick(recipe) }
-    ) {
+    Column(modifier = Modifier.clickable { onCardClick(recipe) }) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -239,17 +248,63 @@ fun RecipeCard(
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = recipe.title,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        Text(recipe.title, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onBackground)
         Divider(modifier = Modifier.padding(top = 4.dp))
     }
 }
 
+@Composable
+fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground
+        ),
+        modifier = Modifier.height(36.dp)
+    ) {
+        Text(label, fontSize = 14.sp)
+    }
+}
 
+@Composable
+fun FilterDropdown(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        OutlinedButton(
+            onClick = { expanded = true },
+            shape = RoundedCornerShape(50),
+            modifier = Modifier.height(40.dp)
+        ) {
+            Text("$label: $selectedOption",
+                fontSize = 14.sp,
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onBackground)
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
 
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
