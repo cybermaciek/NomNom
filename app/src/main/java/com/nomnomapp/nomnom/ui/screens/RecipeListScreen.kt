@@ -28,10 +28,9 @@ import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
+import com.nomnomapp.nomnom.viewmodel.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.DpOffset
 
 
 @Composable
@@ -64,6 +63,8 @@ fun RecipeListScreenView(
 ) {
     var search by remember { mutableStateOf("") }
     val favoriteIds = remember { mutableStateListOf<String>() }
+    var showOnlyUserRecipes by remember { mutableStateOf(false) }
+
 
     val categories by viewModel.categories.collectAsState()
     val areas by viewModel.areas.collectAsState()
@@ -76,8 +77,10 @@ fun RecipeListScreenView(
         recipe.title.contains(search, ignoreCase = true) &&
                 (selectedCategory == "All" || recipe.category == selectedCategory) &&
                 (selectedArea == "All" || recipe.area == selectedArea) &&
-                (!showOnlyFavorites || favoriteIds.contains(recipe.id))
+                (!showOnlyFavorites || favoriteIds.contains(recipe.id)) &&
+                (!showOnlyUserRecipes || recipe.id.startsWith("user_")) // zakładamy że własne przepisy mają np. prefix "user_"
     }
+
 
     LaunchedEffect(search) {
         if (search.isNotBlank()) {
@@ -184,6 +187,11 @@ fun RecipeListScreenView(
                     }
                 }
                 item {
+                    FilterChip("My Recipes", showOnlyUserRecipes) {
+                        showOnlyUserRecipes = !showOnlyUserRecipes
+                    }
+                }
+                item {
                     FilterDropdown("Category", categories, selectedCategory) {
                         selectedCategory = it
                     }
@@ -194,6 +202,7 @@ fun RecipeListScreenView(
                     }
                 }
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
