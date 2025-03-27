@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Save
@@ -124,7 +125,7 @@ fun AddRecipeScreen(
                     ) {
                         Image(
                             painter = imagePainter,
-                            contentDescription = "Zdjęcie przepisu",
+                            contentDescription = "Recipe Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.matchParentSize()
                         )
@@ -132,7 +133,7 @@ fun AddRecipeScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.3f)),
+                                .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.BottomCenter
                         ) {
                             Column(
@@ -141,15 +142,15 @@ fun AddRecipeScreen(
                                     .padding(bottom = 24.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.PhotoCamera,
-                                    contentDescription = "Dodaj zdjęcie",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(48.dp)
+                                    imageVector = Icons.Outlined.AddAPhoto,
+                                    contentDescription = "Add Photo Icon",
+                                    tint = MaterialTheme.colorScheme.background,
+                                    modifier = Modifier.size(60.dp)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "Prześlij zdjęcie przepisu",
-                                    color = Color.White,
+                                    text = "Add recipe photo",
+                                    color = MaterialTheme.colorScheme.background,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
