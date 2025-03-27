@@ -189,7 +189,7 @@ fun RecipeListScreenView(
                     }
                 }
                 item {
-                    FilterDropdown("Area", areas, selectedArea) {
+                    FilterDropdown("Cuisine: ", areas, selectedArea) {
                         selectedArea = it
                     }
                 }
