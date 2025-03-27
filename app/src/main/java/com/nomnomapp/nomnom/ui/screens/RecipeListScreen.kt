@@ -1,6 +1,9 @@
 package com.nomnomapp.nomnom.ui.screens
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +34,7 @@ import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 
 
 @Composable
@@ -254,16 +258,40 @@ fun RecipeCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .background(
-                        MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
-                        shape = RoundedCornerShape(50)
-                    )
             ) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favourites icon",
-                    tint = Color.Red
+                val scale by animateFloatAsState(
+                    targetValue = if (isFavorite) 1.3f else 1f,
+                    animationSpec = tween(durationMillis = 300)
                 )
+
+                val heartColor by animateColorAsState(
+                    targetValue = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onBackground,
+                    animationSpec = tween(durationMillis = 300)
+                )
+
+                IconButton(
+                    onClick = {
+                        onFavoriteClick(recipe)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale
+                        )
+                        .background(
+                            MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
+                            shape = RoundedCornerShape(50)
+                        )
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favourites icon",
+                        tint = heartColor
+                    )
+                }
+
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
