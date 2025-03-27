@@ -1,11 +1,8 @@
 package com.nomnomapp.nomnom.ui.screens
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,11 +10,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -30,62 +29,90 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-
+import com.nomnomapp.nomnom.viewmodel.UserDataManager
 
 @Composable
 fun HomeScreen(
     onNavigateToRecipes: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToShoppingList: () -> Unit
-){
-    val name: String = "Maciuś"
+    onNavigateToShoppingList: () -> Unit,
+    context: Context = LocalContext.current
+) {
     val colorBackground = MaterialTheme.colorScheme.background
     val colorOnBackground = MaterialTheme.colorScheme.onBackground
     val colorOrange = MaterialTheme.colorScheme.primary
     val colorGreen = MaterialTheme.colorScheme.secondary
     val colorBlue = MaterialTheme.colorScheme.tertiary
 
-    Scaffold() { contentPadding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom,
-            modifier = Modifier
-                .padding(contentPadding)
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
-                .padding(16.dp),
-        ) {
-            Image(
-                painter = painterResource(R.drawable.sample_avatar),
-                contentDescription = "avatar",
-                contentScale = ContentScale.Crop,
+    // Load user data when screen is first displayed
+    LaunchedEffect(Unit) {
+        UserDataManager.loadUserData(context)
+    }
+
+    Scaffold(
+        content = { contentPadding ->  // Fixed: Added named parameter
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
                 modifier = Modifier
-                    .size(200.dp)
-                    .clip(CircleShape)
-                    .border(5.dp, colorOrange, CircleShape)
-            )
+                    .padding(contentPadding)
+                    .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.background)
+                    .padding(16.dp),
+            ) {
+            if (UserDataManager.userBitmap != null) {
+                Image(
+                    bitmap = UserDataManager.userBitmap!!.asImageBitmap(),
+                    contentDescription = "avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clip(CircleShape)
+                        .border(5.dp, colorOrange, CircleShape)
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.sample_avatar),
+                    contentDescription = "avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clip(CircleShape)
+                        .border(5.dp, colorOrange, CircleShape)
+                )
+            }
 
             Row(modifier = Modifier.padding(top = 10.dp)) {
-                Text(buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = colorOnBackground)) {
-                        append("Hello, ")
-                    }
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = colorOrange)) {
-                        append(name)
-                    }
-                    withStyle(style = SpanStyle(color = colorOnBackground)) {
-                        append("!")
-                    }
-                },
+                Text(
+                    buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = colorOnBackground)) {
+                            append("Hello, ")
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Bold,
+                                color = colorOrange
+                            )
+                        ) {
+                            append(
+                                if (UserDataManager.userName.isNotBlank()) {
+                                    UserDataManager.userName
+                                } else {
+                                    "Guest"
+                                }
+                            )
+                        }
+                        withStyle(style = SpanStyle(color = colorOnBackground)) {
+                            append("!")
+                        }
+                    },
                     fontSize = 36.sp
                 )
             }
 
-
-            //TODO: Tymczasowo dodane obsługa przycisku następnie przeniesc ją do ViewModel
             Button(
-                onClick = {onNavigateToShoppingList()},
-                colors = ButtonDefaults.buttonColors(containerColor = colorGreen) ,
+                onClick = { onNavigateToShoppingList() },
+                colors = ButtonDefaults.buttonColors(containerColor = colorGreen),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(
@@ -95,8 +122,8 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .height(60.dp)
             ) {
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
@@ -107,7 +134,6 @@ fun HomeScreen(
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
-
                     )
                     Text(
                         text = "Shopping List",
@@ -116,21 +142,19 @@ fun HomeScreen(
                         fontSize = 20.sp
                     )
                 }
-
             }
 
-            //TODO: Tymczasowo dodane obsługa przycisku następnie przeniesc ją do ViewModel
             Button(
-                onClick = {onNavigateToRecipes()},
-                colors = ButtonDefaults.buttonColors(containerColor = colorBlue) ,
+                onClick = { onNavigateToRecipes() },
+                colors = ButtonDefaults.buttonColors(containerColor = colorBlue),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .fillMaxWidth()
                     .height(60.dp)
             ) {
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
@@ -141,7 +165,6 @@ fun HomeScreen(
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
-
                     )
                     Text(
                         text = "Recipes",
@@ -152,18 +175,17 @@ fun HomeScreen(
                 }
             }
 
-            //TODO: Tymczasowo dodane obsługa przycisku następnie przeniesc ją do ViewModel
             Button(
-                onClick = {onNavigateToSettings()},
-                colors = ButtonDefaults.buttonColors(containerColor = colorOnBackground) ,
+                onClick = { onNavigateToSettings() },
+                colors = ButtonDefaults.buttonColors(containerColor = colorOnBackground),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(top = 150.dp, bottom = 30.dp)
                     .fillMaxWidth()
                     .height(60.dp)
             ) {
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
@@ -182,15 +204,11 @@ fun HomeScreen(
                         fontSize = 20.sp
                     )
                 }
-
             }
         }
-    }
-
-
-
-
+    })
 }
+
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
 @Composable
 fun Home_LightmodePreview() {

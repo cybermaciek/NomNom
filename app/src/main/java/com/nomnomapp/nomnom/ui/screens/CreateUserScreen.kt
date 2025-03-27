@@ -1,32 +1,73 @@
 package com.nomnomapp.nomnom.ui.screens
 
 
+import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-
+import com.nomnomapp.nomnom.viewmodel.UserDataManager
+import java.io.IOException
 
 @Composable
 fun CreateUserScreen(
-    onNavigateToHome: () -> Unit
-){
+    onNavigateToHome: () -> Unit,
+    context: Context = LocalContext.current
+) {
+    var yourName by remember { mutableStateOf("") }
+    var selectedImage by remember { mutableStateOf<Bitmap?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            try {
+                val inputStream = context.contentResolver.openInputStream(it)
+                inputStream?.use { stream ->
+                    selectedImage = BitmapFactory.decodeStream(stream)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    val isFormValid by remember {
+        derivedStateOf {
+            yourName.isNotBlank() && selectedImage != null
+        }
+    }
+
     Scaffold { contentPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -44,16 +85,27 @@ fun CreateUserScreen(
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f))
                     .border(5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-            ){
-                Icon(
-                    imageVector = Icons.Outlined.AddAPhoto,
-                    contentDescription = "Add Photo Icon",
-                    tint = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.size(60.dp)
-                )
+                    .clickable { launcher.launch("image/*") }
+            ) {
+                if (selectedImage != null) {
+                    Image(
+                        bitmap = selectedImage!!.asImageBitmap(),
+                        contentDescription = "User profile image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.AddAPhoto,
+                        contentDescription = "Add Photo Icon",
+                        tint = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
             }
 
-            var yourName by remember { mutableStateOf(TextFieldValue("")) }
+            Spacer(modifier = Modifier.height(32.dp))
+
             OutlinedTextField(
                 value = yourName,
                 onValueChange = { yourName = it },
@@ -65,29 +117,38 @@ fun CreateUserScreen(
                 placeholder = { Text(text = "Enter your name") },
                 shape = RoundedCornerShape(15.dp),
                 leadingIcon = {
-                    Icon(imageVector = Icons.Outlined.Create,
-                    contentDescription = "emailIcon",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .padding(start = 24.dp, end = 10.dp)
-                        .size(36.dp)
-
-                    ) },
+                    Icon(
+                        imageVector = Icons.Outlined.Create,
+                        contentDescription = "name icon",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .padding(start = 24.dp, end = 10.dp)
+                            .size(36.dp)
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 54.dp, bottom = 54.dp)
+                    .padding(vertical = 32.dp)
                     .height(60.dp)
-
             )
 
             Button(
-                onClick = { onNavigateToHome() }, // Navigate to HomeScreen
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                onClick = {
+                    selectedImage?.let { bitmap ->
+                        UserDataManager.saveUserData(context, yourName, bitmap)
+                        onNavigateToHome()
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                ),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(bottom = 240.dp)
                     .fillMaxWidth()
-                    .height(60.dp)
+                    .height(60.dp),
+                enabled = isFormValid
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,7 +180,7 @@ fun CreateUserScreen(
 fun CreateUser_LightmodePreview() {
     NomNomTheme {
         CreateUserScreen(
-            onNavigateToHome = {} // Provide an empty lambda
+            onNavigateToHome = {}
         )
     }
 }
@@ -129,7 +190,7 @@ fun CreateUser_LightmodePreview() {
 fun CreateUser_DarkmodePreview() {
     NomNomTheme {
         CreateUserScreen(
-            onNavigateToHome = {} // Provide an empty lambda
+            onNavigateToHome = {}
         )
     }
 }
