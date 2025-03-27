@@ -296,7 +296,7 @@ fun RecipeCard(
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(recipe.title, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onBackground)
-        Divider(modifier = Modifier.padding(top = 4.dp))
+        Divider(modifier = Modifier.padding(4.dp))
     }
 }
 
