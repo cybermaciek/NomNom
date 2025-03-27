@@ -30,6 +30,7 @@ import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.Modifier
 
 
 @Composable
@@ -291,7 +292,14 @@ fun FilterDropdown(
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .padding(top = 50.dp, bottom = 20.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(12.dp)
+                )
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
@@ -303,6 +311,7 @@ fun FilterDropdown(
                 )
             }
         }
+
     }
 }
 
