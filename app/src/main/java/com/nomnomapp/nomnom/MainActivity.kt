@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,20 +16,31 @@ import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.screens.*
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
+import com.nomnomapp.nomnom.viewmodel.UserDataManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Możesz zachować enableEdgeToEdge(), jeśli potrzebujesz efektu immersion layoutu.
         enableEdgeToEdge()
+
+        // Load user data when app starts
+        UserDataManager.loadUserData(this)
 
         setContent {
             NomNomTheme {
                 val navController = rememberNavController()
+                val context = LocalContext.current
+
+                // Check if user has already set up their profile
+                val startDestination = if (UserDataManager.userName.isNotBlank() && UserDataManager.userBitmap != null) {
+                    Routes.HOME.route
+                } else {
+                    Routes.CREATE_USER.route
+                }
 
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.HOME.route
+                    startDestination = startDestination
                 ) {
                     composable(Routes.HOME.route) {
                         HomeScreen(
@@ -51,17 +63,15 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-
-
-                    composable("settings") {
+                    composable(Routes.SETTINGS.route) {
                         SettingsScreen()
                     }
 
                     composable(
                         route = Routes.MEAL_DETAIL.route,
                         arguments = listOf(navArgument("mealId") { type = NavType.StringType })
-                    ) {
-                        val mealId = it.arguments?.getString("mealId") ?: ""
+                    ) { backStackEntry ->  // Fixed: Added proper parameter name
+                        val mealId = backStackEntry.arguments?.getString("mealId") ?: ""
                         val viewModel: RecipeDetailViewModel = viewModel()
                         RecipeDetailScreen(
                             mealId = mealId,
@@ -76,6 +86,16 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable(Routes.CREATE_USER.route) {
+                            CreateUserScreen(
+                                onNavigateToHome = {
+                                    navController.navigate(Routes.HOME.route) {
+                                        popUpTo(Routes.CREATE_USER.route) { inclusive = true }
+                                    }
+                                },
+                                context = context
+                            )
+                    }
                 }
             }
         }
