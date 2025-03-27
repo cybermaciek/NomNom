@@ -1,6 +1,7 @@
 package com.nomnomapp.nomnom.data.repository
 
 import com.nomnomapp.nomnom.data.remote.*
+import com.nomnomapp.nomnom.data.remote.dto.MealDto
 import com.nomnomapp.nomnom.model.Recipe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,57 +11,42 @@ class RecipeRepository {
 
     suspend fun searchRecipes(query: String): List<Recipe> = withContext(Dispatchers.IO) {
         val response = api.searchMealsByName(query)
-        response.meals?.map { mealDto ->
-            Recipe(
-                id = mealDto.id,
-                title = mealDto.title,
-                imageUrl = mealDto.imageUrl,
-                category = mealDto.category,
-                area = mealDto.area,
-                instructions = mealDto.instructions,
-                ingredients = listOfNotNull(
-                    mealDto.ingredient1,
-                    mealDto.ingredient2,
-                    mealDto.ingredient3
-                    // Można dodać więcej
-                ).filter { it.isNotBlank() }
-            )
-        } ?: emptyList()
+        response.meals?.map(::mapMealDtoToRecipe) ?: emptyList()
     }
+
     suspend fun getMealById(mealId: String): Recipe? = withContext(Dispatchers.IO) {
         val response = api.lookupMealById(mealId)
-        // Zwracamy pierwszy posiłek (API zwraca listę, ale zazwyczaj 1-elementową).
-        response.meals?.firstOrNull()?.let { mealDto ->
-            Recipe(
-                id = mealDto.id,
-                title = mealDto.title,
-                imageUrl = mealDto.imageUrl,
-                category = mealDto.category,
-                area = mealDto.area,
-                instructions = mealDto.instructions,
-                ingredients = listOfNotNull(
-                    mealDto.ingredient1,
-                    mealDto.ingredient2,
-                    mealDto.ingredient3,
-                    mealDto.ingredient4,
-                    mealDto.ingredient5,
-                    mealDto.ingredient6,
-                    mealDto.ingredient7,
-                    mealDto.ingredient8,
-                    mealDto.ingredient9,
-                    mealDto.ingredient10,
-                    // w razie potrzeb dodac więcej ingredientów
-                ).filter { it.isNotBlank() }
-            )
-        }
+        response.meals?.firstOrNull()?.let(::mapMealDtoToRecipe)
     }
 
-    suspend fun getCategories(): List<String> {
-        return api.getCategories().categories.map { it.name }
+    suspend fun getCategories(): List<String> = withContext(Dispatchers.IO) {
+        api.getCategories().categories.map { it.name }
     }
 
-    suspend fun getAreas(): List<String> {
-        return api.getAreas().areas.map { it.name }
+    suspend fun getAreas(): List<String> = withContext(Dispatchers.IO) {
+        api.getAreas().areas.map { it.name }
     }
 
+    private fun mapMealDtoToRecipe(mealDto: MealDto): Recipe {
+        return Recipe(
+            id = mealDto.id,
+            title = mealDto.title,
+            imageUrl = mealDto.imageUrl,
+            category = mealDto.category,
+            area = mealDto.area,
+            instructions = mealDto.instructions,
+            ingredients = listOfNotNull(
+                mealDto.ingredient1,
+                mealDto.ingredient2,
+                mealDto.ingredient3,
+                mealDto.ingredient4,
+                mealDto.ingredient5,
+                mealDto.ingredient6,
+                mealDto.ingredient7,
+                mealDto.ingredient8,
+                mealDto.ingredient9,
+                mealDto.ingredient10
+            ).filter { it.isNotBlank() }
+        )
+    }
 }

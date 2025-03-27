@@ -31,6 +31,7 @@ import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpOffset
 
 
 @Composable
@@ -42,7 +43,7 @@ fun RecipeListScreen(
     val recipes by viewModel.recipes.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.searchRecipes("Chicken")
+        //viewModel.searchRecipes("Chicken")
         viewModel.loadFilters()
     }
 
@@ -76,6 +77,14 @@ fun RecipeListScreenView(
                 (selectedCategory == "All" || recipe.category == selectedCategory) &&
                 (selectedArea == "All" || recipe.area == selectedArea) &&
                 (!showOnlyFavorites || favoriteIds.contains(recipe.id))
+    }
+
+    LaunchedEffect(search) {
+        if (search.isNotBlank()) {
+            viewModel.searchRecipes(search)
+        } else {
+            viewModel.searchRecipes("")
+        }
     }
 
     Scaffold(
@@ -294,12 +303,7 @@ fun FilterDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .padding(top = 50.dp, bottom = 20.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(12.dp)
-                )
+                .clip(RoundedCornerShape(20.dp))
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
@@ -311,7 +315,6 @@ fun FilterDropdown(
                 )
             }
         }
-
     }
 }
 

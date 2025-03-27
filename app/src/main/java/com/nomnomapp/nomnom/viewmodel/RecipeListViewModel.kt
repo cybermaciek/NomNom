@@ -27,8 +27,6 @@ class RecipeListViewModel : ViewModel() {
     private val _categories = MutableStateFlow<List<String>>(emptyList())
     val categories: StateFlow<List<String>> = _categories
 
-
-
     private val _areas = MutableStateFlow<List<String>>(emptyList())
     val areas: StateFlow<List<String>> = _areas
 

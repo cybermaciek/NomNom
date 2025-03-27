@@ -145,13 +145,13 @@ fun AddRecipeScreen(
                                 Icon(
                                     imageVector = Icons.Outlined.AddAPhoto,
                                     contentDescription = "Add Photo Icon",
-                                    tint = MaterialTheme.colorScheme.background,
+                                    tint = MaterialTheme.colorScheme.background.copy(0.7f),
                                     modifier = Modifier.size(60.dp)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Add recipe photo",
-                                    color = MaterialTheme.colorScheme.background,
+                                    color = MaterialTheme.colorScheme.background.copy(0.7f),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
