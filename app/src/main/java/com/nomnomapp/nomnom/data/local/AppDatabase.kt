@@ -8,7 +8,7 @@ import com.nomnomapp.nomnom.data.local.entity.UserRecipe
 
 @Database(
     entities = [FavoriteEntity::class, UserRecipe::class],
-    version = 2, // upewnij się, że to wersja wyższa niż poprzednia
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

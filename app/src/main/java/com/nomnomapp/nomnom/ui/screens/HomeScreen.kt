@@ -2,7 +2,6 @@ package com.nomnomapp.nomnom.ui.screens
 
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

@@ -1,11 +1,8 @@
 package com.nomnomapp.nomnom.ui.screens
 
-import android.content.Intent
 import android.net.Uri
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +24,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -37,8 +33,6 @@ import com.nomnomapp.nomnom.data.local.AppDatabase
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.viewmodel.AddRecipeViewModel
-import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
 
 @OptIn(ExperimentalMaterial3Api::class)
