@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.nomnomapp.nomnom.viewmodel.UserDataManager
 
 private val LightColorScheme = lightColorScheme(
     background = appWhite,
@@ -29,17 +30,28 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun NomNomTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, // WYLACZYC DYNAMICZNE USTAWIANIE KOLOROW !!!
+    // Remove the default darkTheme parameter since we'll use our own logic
+    dynamicColor: Boolean = false, // Keep dynamic color disabled as per your comment
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+    // Load the theme preference if not already loaded
+    if (UserDataManager.currentTheme == UserDataManager.AppTheme.SYSTEM) {
+        UserDataManager.loadThemePreference(context)
+    }
+
+    val systemTheme = isSystemInDarkTheme()
+    val darkTheme = when (UserDataManager.currentTheme) {
+        UserDataManager.AppTheme.LIGHT -> false
+        UserDataManager.AppTheme.DARK -> true
+        UserDataManager.AppTheme.SYSTEM -> systemTheme
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
