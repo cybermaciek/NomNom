@@ -1,6 +1,7 @@
 package com.nomnomapp.nomnom
 
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,13 +18,30 @@ import com.nomnomapp.nomnom.ui.screens.*
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
 import com.nomnomapp.nomnom.viewmodel.UserDataManager
+import java.io.File
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Load user data when app starts
+        // ===== START: CLEAR DATA ON FRESH INSTALL ===== //
+        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val isFirstRun = prefs.getBoolean("is_first_run", true)
+
+        if (isFirstRun) {
+            // 1. Clear SharedPreferences (username)
+            getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().clear().apply()
+
+            // 2. Delete the saved image file
+            File(filesDir, "user_image.jpg").delete()
+
+            // 3. Mark as initialized
+            prefs.edit().putBoolean("is_first_run", false).apply()
+        }
+        // ===== END ===== //
+
+        // Load user data (if any exists after cleanup)
         UserDataManager.loadUserData(this)
 
         setContent {
