@@ -1,3 +1,4 @@
+// com.nomnomapp.nomnom.ui.screens/SettingsScreen.kt
 package com.nomnomapp.nomnom.ui.screens
 
 import android.content.ClipData
@@ -26,12 +27,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.model.VideoPlayer
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-import com.nomnomapp.nomnom.viewmodel.UserDataManager
+import com.nomnomapp.nomnom.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
@@ -42,8 +44,7 @@ fun SettingsScreen(
     val videoUri = remember {
         Uri.parse("android.resource://${context.packageName}/${R.raw.video}")
     }
-
-    // Track if we're currently on the Settings screen
+    val viewModel: SettingsViewModel = viewModel()
     val isScreenVisible by rememberNavControllerVisibility(navController, Routes.SETTINGS)
 
     SettingsScreenView(
@@ -55,7 +56,8 @@ fun SettingsScreen(
             }
         },
         videoUri = videoUri,
-        isScreenVisible = isScreenVisible
+        isScreenVisible = isScreenVisible,
+        viewModel = viewModel
     )
 }
 
@@ -65,13 +67,11 @@ fun SettingsScreenView(
     onEditProfileClick: () -> Unit,
     videoUri: Uri,
     isScreenVisible: Boolean,
+    viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
 ) {
     val themeOptions = listOf("Light", "Dark", "System")
-    val (selectedOption, onOptionSelected) = remember {
-        mutableStateOf(UserDataManager.currentTheme.value)
-    }
 
     Scaffold(modifier = modifier) { contentPadding ->
         Column(
@@ -175,22 +175,16 @@ fun SettingsScreenView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .selectable(
-                                    selected = (text == selectedOption),
+                                    selected = (text == viewModel.selectedTheme),
                                     onClick = {
-                                        onOptionSelected(text)
-                                        val theme = when (text) {
-                                            "Light" -> UserDataManager.AppTheme.LIGHT
-                                            "Dark" -> UserDataManager.AppTheme.DARK
-                                            else -> UserDataManager.AppTheme.SYSTEM
-                                        }
-                                        UserDataManager.saveThemePreference(context, theme)
+                                        viewModel.updateTheme(text, context)
                                     }
                                 )
                                 .padding(vertical = 8.dp)
                         ) {
                             RadioButton(
-                                selected = (text == selectedOption),
-                                onClick = null // null because we handle selection in parent Row
+                                selected = (text == viewModel.selectedTheme),
+                                onClick = null
                             )
                             Text(
                                 text = text,
@@ -213,10 +207,10 @@ fun SettingsScreenView(
 
             Button(
                 onClick = {
-                    // Replace with your actual app link
-                    val appLink = "https://github.com/cybermaciek/NomNom"
-                    copyToClipboard(context, appLink)
-                    showToast(context, "App link copied to clipboard")
+                    val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
+                    clipboard?.setPrimaryClip(
+                        ClipData.newPlainText("", "https://github.com/cybermaciek/NomNom")
+                    )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
                 shape = RoundedCornerShape(15.dp),
@@ -350,16 +344,6 @@ fun rememberNavControllerVisibility(
     return isVisible
 }
 
-private fun copyToClipboard(context: Context, text: String) {
-    val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
-    val clip = ClipData.newPlainText("App download link", text)
-    clipboard?.setPrimaryClip(clip)
-}
-
-private fun showToast(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-}
-
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
 @Composable
 fun Settings_LightmodePreview() {
@@ -373,6 +357,7 @@ fun Settings_LightmodePreview() {
             onEditProfileClick = {},
             videoUri = dummyVideoUri,
             isScreenVisible = true,
+            viewModel = SettingsViewModel(),
             context = LocalContext.current
         )
     }
@@ -391,6 +376,7 @@ fun Settings_DarkmodePreview() {
             onEditProfileClick = {},
             videoUri = dummyVideoUri,
             isScreenVisible = true,
+            viewModel = SettingsViewModel(),
             context = LocalContext.current
         )
     }
