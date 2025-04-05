@@ -64,7 +64,9 @@ fun RecipeListScreen(
         recipes = recipes,
         onNavigateToMealDetail = onNavigateToMealDetail,
         navController = navController,
-        viewModel = viewModel
+        viewModel = viewModel,
+        onBackClick = { navController.popBackStack() },
+        onSettingsClick = { navController.navigate(Routes.SETTINGS.route) }
     )
 }
 
@@ -73,7 +75,9 @@ fun RecipeListScreenView(
     recipes: List<Recipe>,
     onNavigateToMealDetail: (String) -> Unit,
     navController: NavController,
-    viewModel: RecipeListViewModel
+    viewModel: RecipeListViewModel,
+    onBackClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     var search by remember { mutableStateOf("") }
     val favoriteIds = remember { mutableStateListOf<String>() }
@@ -132,7 +136,7 @@ fun RecipeListScreenView(
                         .size(48.dp)
                         .clip(RoundedCornerShape(50))
                         .background(MaterialTheme.colorScheme.background)
-                        .clickable { navController.popBackStack() },
+                        .clickable { onBackClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -147,11 +151,20 @@ fun RecipeListScreenView(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Settings",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.background)
+                        .clickable { onSettingsClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = "Settings",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -276,7 +289,7 @@ fun RecipeCard(
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(recipe.title, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onBackground)
-        Divider(modifier = Modifier.padding(4.dp))
+        HorizontalDivider(modifier = Modifier.padding(4.dp))
     }
 }
 

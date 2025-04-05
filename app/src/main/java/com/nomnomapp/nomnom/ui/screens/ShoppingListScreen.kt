@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.filled.ArrowBack
@@ -35,45 +36,90 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 
 
 @Composable
-fun ShoppingListScreen() {
-    //TYMCZASOWA DEFINCJA LISTY DO ZAKUPU
+fun ShoppingListScreen(
+    navController: NavController? = null  // Make nullable for previews
+) {
+    // Temporary shopping list data
     val toBuy = listOf("Apple", "Orange juice", "Ketchup")
     val recent = listOf("Potatoes", "Chicken breast", "Bread", "Cheese", "Eggs")
 
-    ShoppingListScreenView(toBuyItems = toBuy, recentItems = recent)
+    ShoppingListScreenView(
+        toBuyItems = toBuy,
+        recentItems = recent,
+        onBackClick = { navController?.popBackStack() },
+        onSettingsClick = { navController?.navigate(Routes.SETTINGS.route) }
+    )
 }
-
 
 @Composable
 fun ShoppingListScreenView(
     toBuyItems: List<String>,
-    recentItems: List<String>
+    recentItems: List<String>,
+    onBackClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     var search by remember { mutableStateOf("") }
 
-    Scaffold() { contentPadding ->
-        Column( //TODO: zmienić na LazyColumn
+    Scaffold { contentPadding ->
+        Column(
             modifier = Modifier
                 .padding(contentPadding)
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background)
                 .padding(16.dp)
-            ) {
-            // Pasek górny
+        ) {
+            // Top bar
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
-                Text("Shopping List", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onBackground)
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.background)
+                        .clickable { onBackClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+
+                Text(
+                    text = "Shopping List",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.background)
+                        .clickable { onSettingsClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = "Settings",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -174,6 +220,7 @@ fun ShoppingListScreenView(
         }
     }
 }
+
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
 @Composable
 fun LightmodePreview() {

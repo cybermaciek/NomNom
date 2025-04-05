@@ -69,7 +69,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(Routes.SHOPPING_LIST.route) {
-                        ShoppingListScreen()
+                        ShoppingListScreen(
+                            navController = navController
+                        )
                     }
 
                     composable(Routes.RECIPES.route) {
@@ -82,7 +84,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(Routes.SETTINGS.route) {
-                        SettingsScreen()
+                        SettingsScreen(
+                            navController = navController
+                        )
                     }
 
                     composable(

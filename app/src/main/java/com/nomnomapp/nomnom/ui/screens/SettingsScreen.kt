@@ -2,6 +2,7 @@ package com.nomnomapp.nomnom.ui.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,28 +12,36 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 
-
+@Composable
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController? = null  // Make nullable for previews
+) {
+    SettingsScreenView(
+        modifier = modifier,
+        onBackClick = { navController?.popBackStack() },
+    )
+}
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
-    val colorBackground = MaterialTheme.colorScheme.background
-    val colorOnBackground = MaterialTheme.colorScheme.onBackground
-    val colorOrange = MaterialTheme.colorScheme.primary
-    val colorGreen = MaterialTheme.colorScheme.secondary
-    val colorBlue = MaterialTheme.colorScheme.tertiary
-
+fun SettingsScreenView(
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val themeOptions = listOf("Light", "Dark")
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(themeOptions[1]) }
 
-    Scaffold() { contentPadding ->
+    Scaffold(modifier = modifier) { contentPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -47,28 +56,48 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = "Back icon",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.background)
+                        .clickable { onBackClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+
                 Text(
                     text = "Settings",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Settings icon",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.background),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = "Settings icon",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(containerColor = colorOrange) ,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(bottom = 8.dp)
@@ -83,14 +112,14 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     Icon(
                         imageVector = Icons.Outlined.Create,
                         contentDescription = "Edit",
-                        tint = colorBackground,
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Change name",
-                        color = colorBackground,
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -99,7 +128,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 
             Button(
                 onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(containerColor = colorOrange) ,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
@@ -114,14 +143,14 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     Icon(
                         imageVector = Icons.Outlined.Create,
                         contentDescription = "Edit",
-                        tint = colorBackground,
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Change photo",
-                        color = colorBackground,
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -130,7 +159,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 
             HorizontalDivider(
                 thickness = 2.dp,
-                color = colorOnBackground,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
             )
@@ -142,7 +171,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = "Choose theme",
-                    color = colorOnBackground,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(start = 8.dp, end = 16.dp)
@@ -164,7 +193,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                         )
                         Text(
                             text = text,
-                            color = colorOnBackground,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Normal,
                             fontSize = 20.sp
                         )
@@ -174,14 +203,14 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 
             HorizontalDivider(
                 thickness = 2.dp,
-                color = colorOnBackground,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
             )
 
             Button(
                 onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(containerColor = colorOrange) ,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
@@ -196,14 +225,14 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     Icon(
                         imageVector = Icons.Outlined.Share,
                         contentDescription = "Share",
-                        tint = colorBackground,
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Share app",
-                        color = colorBackground,
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -212,7 +241,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 
             Button(
                 onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(containerColor = colorOrange) ,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
@@ -227,14 +256,14 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     Icon(
                         painter = painterResource(id = R.drawable.icon_delete),
                         contentDescription = "Restore defaults icon",
-                        tint = colorBackground,
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Restore defaults",
-                        color = colorBackground,
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -243,7 +272,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 
             HorizontalDivider(
                 thickness = 2.dp,
-                color = colorOnBackground,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
             )
@@ -257,28 +286,28 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = "About",
-                    color = colorOnBackground,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
                 )
 
                 Text(
                     text = "v1.0.0",
-                    color = colorOnBackground,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Normal,
                     fontSize = 10.sp
                 )
 
                 Text(
                     text = "Made by Maciej Chitrosz & Adrian Jargiło",
-                    color = colorOnBackground,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Normal,
                     fontSize = 10.sp
                 )
 
                 Text(
                     text = "2025",
-                    color = colorOnBackground,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Normal,
                     fontSize = 10.sp
                 )
@@ -287,19 +316,24 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
     }
 }
 
+// Update your previews
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
 @Composable
 fun Settings_LightmodePreview() {
     NomNomTheme {
-        SettingsScreen()
+        SettingsScreenView(
+            onBackClick = {}
+        )
     }
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
 @Composable
 fun Settings_DarkmodePreview() {
-    NomNomTheme{
-        SettingsScreen()
+    NomNomTheme {
+        SettingsScreenView(
+            onBackClick = {}
+        )
     }
 }
 
