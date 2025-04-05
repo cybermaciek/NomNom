@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nomnomapp.nomnom.R
+import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 
 @Composable
@@ -30,12 +31,19 @@ fun SettingsScreen(
     SettingsScreenView(
         modifier = modifier,
         onBackClick = { navController?.popBackStack() },
+        onEditProfileClick = {
+            navController?.navigate(Routes.CREATE_USER.route) {
+                // Clear the back stack up to HOME when navigating to CREATE_USER
+                popUpTo(Routes.HOME.route) { inclusive = false }
+            }
+        }
     )
 }
 
 @Composable
 fun SettingsScreenView(
     onBackClick: () -> Unit,
+    onEditProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val themeOptions = listOf("Light", "Dark")
@@ -96,7 +104,7 @@ fun SettingsScreenView(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {/* TODO */},
+                onClick = { onEditProfileClick() },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
@@ -118,38 +126,7 @@ fun SettingsScreenView(
                             .size(36.dp)
                     )
                     Text(
-                        text = "Change name",
-                        color = MaterialTheme.colorScheme.background,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                }
-            }
-
-            Button(
-                onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
-                shape = RoundedCornerShape(15.dp),
-                modifier = Modifier
-                    .padding(top = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth()
-                    .height(60.dp)
-            ) {
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Create,
-                        contentDescription = "Edit",
-                        tint = MaterialTheme.colorScheme.background,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .size(36.dp)
-                    )
-                    Text(
-                        text = "Change photo",
+                        text = "Change photo / name",
                         color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
@@ -322,7 +299,8 @@ fun SettingsScreenView(
 fun Settings_LightmodePreview() {
     NomNomTheme {
         SettingsScreenView(
-            onBackClick = {}
+            onBackClick = {},
+            onEditProfileClick = {}
         )
     }
 }
@@ -332,8 +310,8 @@ fun Settings_LightmodePreview() {
 fun Settings_DarkmodePreview() {
     NomNomTheme {
         SettingsScreenView(
-            onBackClick = {}
+            onBackClick = {},
+            onEditProfileClick = {}
         )
     }
 }
-

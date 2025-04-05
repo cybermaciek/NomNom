@@ -1,7 +1,5 @@
 package com.nomnomapp.nomnom
 
-
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,12 +24,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         // ===== START: CLEAR DATA ON FRESH INSTALL ===== //
-        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val isFirstRun = prefs.getBoolean("is_first_run", true)
 
         if (isFirstRun) {
             // 1. Clear SharedPreferences (username)
-            getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().clear().apply()
+            getSharedPreferences("user_prefs", MODE_PRIVATE).edit().clear().apply()
 
             // 2. Delete the saved image file
             File(filesDir, "user_image.jpg").delete()
