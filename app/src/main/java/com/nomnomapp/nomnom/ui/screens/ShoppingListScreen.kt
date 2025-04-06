@@ -153,7 +153,7 @@ fun ShoppingListScreenView(
                         ) {
                             if (searchQuery.isBlank()) {
                                 Text(
-                                    text = "Search...",
+                                    text = "Add...",
                                     color = MaterialTheme.colorScheme.onBackground,
                                     maxLines = 1,
                                 )
