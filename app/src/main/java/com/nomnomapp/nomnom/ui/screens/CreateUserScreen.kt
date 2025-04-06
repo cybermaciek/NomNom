@@ -15,6 +15,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -27,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,6 +115,7 @@ fun CreateUserScreen(
                     fontStyle = FontStyle.Italic,
                     fontSize = 20.sp
                 ) },
+                singleLine = true,
                 placeholder = { Text(text = "Enter your name") },
                 shape = RoundedCornerShape(15.dp),
                 leadingIcon = {
@@ -125,6 +128,9 @@ fun CreateUserScreen(
                             .size(36.dp)
                     )
                 },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 32.dp)

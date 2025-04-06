@@ -28,9 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
@@ -90,7 +87,6 @@ fun ShoppingListScreenView(
                 .background(color = MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            // Top bar
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -136,7 +132,6 @@ fun ShoppingListScreenView(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Search bar
             BasicTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChanged,
@@ -160,7 +155,7 @@ fun ShoppingListScreenView(
                                 Text(
                                     text = "Search...",
                                     color = MaterialTheme.colorScheme.onBackground,
-                                    maxLines = 1
+                                    maxLines = 1,
                                 )
                             }
                             innerTextField()
@@ -189,7 +184,6 @@ fun ShoppingListScreenView(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // To buy section
             if (toBuyItems.isNotEmpty()) {
                 Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -213,7 +207,6 @@ fun ShoppingListScreenView(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Shopping history section
             if (recentItems.isNotEmpty()) {
                 Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
