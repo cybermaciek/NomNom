@@ -34,7 +34,7 @@ import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 fun RecipeDetailScreen(
     mealId: String,
     viewModel: RecipeDetailViewModel,
-    navController: NavController // Dodaj parametr navController
+    navController: NavController
 ) {
     val mealState by viewModel.mealState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -49,7 +49,6 @@ fun RecipeDetailScreen(
         isLoading = isLoading,
         errorMessage = errorMessage,
         onBackClick = {
-            // Po kliknięciu strzałki cofamy się
             navController.popBackStack()
         }
     )

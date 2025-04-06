@@ -23,23 +23,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // ===== START: CLEAR DATA ON FRESH INSTALL ===== //
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val isFirstRun = prefs.getBoolean("is_first_run", true)
 
         if (isFirstRun) {
-            // 1. Clear SharedPreferences (username)
             getSharedPreferences("user_prefs", MODE_PRIVATE).edit().clear().apply()
-
-            // 2. Delete the saved image file
             File(filesDir, "user_image.jpg").delete()
-
-            // 3. Mark as initialized
             prefs.edit().putBoolean("is_first_run", false).apply()
         }
-        // ===== END ===== //
 
-        // Load user data (if any exists after cleanup)
         UserDataManager.loadUserData(this)
 
         setContent {
@@ -47,7 +39,6 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val context = LocalContext.current
 
-                // Check if user has already set up their profile
                 val startDestination = if (UserDataManager.userName.isNotBlank() && UserDataManager.userBitmap != null) {
                     Routes.HOME.route
                 } else {

@@ -41,8 +41,6 @@ fun AddRecipeScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-
-    // Inicjalizacja Room i ViewModel
     val db = remember {
         Room.databaseBuilder(
             context,
@@ -52,7 +50,6 @@ fun AddRecipeScreen(
     }
     val viewModel = remember { AddRecipeViewModel(LocalRecipeRepository(db.userRecipeDao())) }
 
-    // Pola formularza
     var title by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
@@ -60,7 +57,6 @@ fun AddRecipeScreen(
     var ingredients by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Launcher do wybierania zdjęcia
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->

@@ -30,12 +30,10 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun NomNomTheme(
-    // Remove the default darkTheme parameter since we'll use our own logic
-    dynamicColor: Boolean = false, // Keep dynamic color disabled as per your comment
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    // Load the theme preference if not already loaded
     if (UserDataManager.currentTheme == UserDataManager.AppTheme.SYSTEM) {
         UserDataManager.loadThemePreference(context)
     }

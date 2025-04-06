@@ -46,9 +46,8 @@ import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 
 @Composable
 fun ShoppingListScreen(
-    navController: NavController? = null  // Make nullable for previews
+    navController: NavController? = null
 ) {
-    // Temporary shopping list data
     val toBuy = listOf("Apple", "Orange juice", "Ketchup")
     val recent = listOf("Potatoes", "Chicken breast", "Bread", "Cheese", "Eggs")
 
@@ -77,7 +76,6 @@ fun ShoppingListScreenView(
                 .background(color = MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            // Top bar
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -124,7 +122,6 @@ fun ShoppingListScreenView(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pole dodawania
             BasicTextField(
                 value = search,
                 onValueChange = { search = it },
@@ -172,7 +169,6 @@ fun ShoppingListScreenView(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Do kupienia
             if (toBuyItems.isNotEmpty()) {
                 Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -236,5 +232,3 @@ fun DarkmodePreview() {
         ShoppingListScreen()
     }
 }
-
-

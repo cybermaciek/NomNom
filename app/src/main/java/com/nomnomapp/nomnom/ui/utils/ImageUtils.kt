@@ -1,4 +1,4 @@
-package com.nomnomapp.nomnom.ui.utils
+package com.nomnomapp.nomnom.ui.utilities
 
 
 import android.graphics.Bitmap

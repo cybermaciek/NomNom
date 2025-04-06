@@ -43,13 +43,12 @@ fun HomeScreen(
     val colorGreen = MaterialTheme.colorScheme.secondary
     val colorBlue = MaterialTheme.colorScheme.tertiary
 
-    // Load user data when screen is first displayed
     LaunchedEffect(Unit) {
         UserDataManager.loadUserData(context)
     }
 
     Scaffold(
-        content = { contentPadding ->  // Fixed: Added named parameter
+        content = { contentPadding ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,

@@ -96,7 +96,7 @@ fun RecipeListScreenView(
                 (selectedCategory == "All" || recipe.category == selectedCategory) &&
                 (selectedArea == "All" || recipe.area == selectedArea) &&
                 (!showOnlyFavorites || favoriteIds.contains(recipe.id)) &&
-                (!showOnlyUserRecipes || recipe.id.startsWith("user_")) // zakładamy że własne przepisy mają np. prefix "user_"
+                (!showOnlyUserRecipes || recipe.id.startsWith("user_"))
     }
 
 
