@@ -1,59 +1,71 @@
 package com.nomnomapp.nomnom.ui.screens
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-
+import com.nomnomapp.nomnom.viewmodel.ShoppingListViewModel
 
 @Composable
 fun ShoppingListScreen(
     navController: NavController? = null
 ) {
-    val toBuy = listOf("Apple", "Orange juice", "Ketchup")
-    val recent = listOf("Potatoes", "Chicken breast", "Bread", "Cheese", "Eggs")
+    val context = LocalContext.current
+    val viewModel: ShoppingListViewModel = remember {
+        ShoppingListViewModel(context)
+    }
+
+    val toBuyItems by viewModel.itemsInCart.collectAsState(initial = emptyList())
+    val recentItems by viewModel.recentItems.collectAsState(initial = emptyList())
+    val searchQuery by viewModel.searchQuery.collectAsState()
 
     ShoppingListScreenView(
-        toBuyItems = toBuy,
-        recentItems = recent,
+        toBuyItems = toBuyItems.map { it.name },
+        recentItems = recentItems.map { it.name },
+        searchQuery = searchQuery,
+        onSearchQueryChanged = { viewModel.updateSearchQuery(it) },
+        onAddItem = { viewModel.addOrRemoveItem(it) },
+        onRemoveItem = { viewModel.moveToRecent(it) },
         onBackClick = { navController?.popBackStack() },
         onSettingsClick = { navController?.navigate(Routes.SETTINGS.route) }
     )
@@ -63,11 +75,13 @@ fun ShoppingListScreen(
 fun ShoppingListScreenView(
     toBuyItems: List<String>,
     recentItems: List<String>,
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    onAddItem: (String) -> Unit,
+    onRemoveItem: (String) -> Unit,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
-    var search by remember { mutableStateOf("") }
-
     Scaffold { contentPadding ->
         Column(
             modifier = Modifier
@@ -76,6 +90,7 @@ fun ShoppingListScreenView(
                 .background(color = MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
+            // Top bar
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -117,14 +132,14 @@ fun ShoppingListScreenView(
                         tint = MaterialTheme.colorScheme.onBackground,
                     )
                 }
-
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Search bar
             BasicTextField(
-                value = search,
-                onValueChange = { search = it },
+                value = searchQuery,
+                onValueChange = onSearchQueryChanged,
                 singleLine = true,
                 maxLines = 1,
                 decorationBox = { innerTextField ->
@@ -141,7 +156,7 @@ fun ShoppingListScreenView(
                                 .padding(end = 8.dp),
                             contentAlignment = Alignment.CenterStart
                         ) {
-                            if (search.isBlank()) {
+                            if (searchQuery.isBlank()) {
                                 Text(
                                     text = "Search...",
                                     color = MaterialTheme.colorScheme.onBackground,
@@ -152,9 +167,14 @@ fun ShoppingListScreenView(
                         }
 
                         Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = "Szukaj",
-                            tint = MaterialTheme.colorScheme.onBackground
+                            imageVector = if (searchQuery.isNotBlank()) Icons.Default.Add else Icons.Outlined.Search,
+                            contentDescription = if (searchQuery.isNotBlank()) "Add" else "Search",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier
+                                .clickable(enabled = searchQuery.isNotBlank()) {
+                                    onAddItem(searchQuery)
+                                    onSearchQueryChanged("")
+                                }
                         )
                     }
                 },
@@ -169,6 +189,7 @@ fun ShoppingListScreenView(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // To buy section
             if (toBuyItems.isNotEmpty()) {
                 Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -177,7 +198,7 @@ fun ShoppingListScreenView(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable(onClick = {})
+                                .clickable { onRemoveItem(item) }
                                 .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -192,7 +213,7 @@ fun ShoppingListScreenView(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Ostatnie zakupy
+            // Shopping history section
             if (recentItems.isNotEmpty()) {
                 Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -201,14 +222,14 @@ fun ShoppingListScreenView(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable(onClick = {})
+                                .clickable { onAddItem(item) }
                                 .background(Color.Gray, shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(item, color = Color.White)
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.onBackground)
+                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
                         }
                     }
                 }
@@ -217,18 +238,19 @@ fun ShoppingListScreenView(
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
+@Preview(showBackground = true)
 @Composable
-fun LightmodePreview() {
+fun ShoppingListScreenPreview() {
     NomNomTheme {
-        ShoppingListScreen()
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-@Composable
-fun DarkmodePreview() {
-    NomNomTheme {
-        ShoppingListScreen()
+        ShoppingListScreenView(
+            toBuyItems = listOf("Apples", "Milk", "Bread"),
+            recentItems = listOf("Eggs", "Cheese", "Pasta"),
+            searchQuery = "",
+            onSearchQueryChanged = {},
+            onAddItem = {},
+            onRemoveItem = {},
+            onBackClick = {},
+            onSettingsClick = {}
+        )
     }
 }
