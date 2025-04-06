@@ -31,8 +31,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
+import com.nomnomapp.nomnom.ui.utils.resizeBitmap
 import com.nomnomapp.nomnom.viewmodel.UserDataManager
 import java.io.IOException
+
 
 @Composable
 fun CreateUserScreen(
@@ -49,7 +51,9 @@ fun CreateUserScreen(
             try {
                 val inputStream = context.contentResolver.openInputStream(it)
                 inputStream?.use { stream ->
-                    selectedImage = BitmapFactory.decodeStream(stream)
+                    val original = BitmapFactory.decodeStream(stream)
+                    selectedImage = original?.let { resizeBitmap(it) }
+
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
