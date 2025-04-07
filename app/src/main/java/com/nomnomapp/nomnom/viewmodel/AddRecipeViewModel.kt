@@ -2,6 +2,8 @@ package com.nomnomapp.nomnom.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nomnomapp.nomnom.data.local.dao.ShoppingItemDao
+import com.nomnomapp.nomnom.data.local.entity.ShoppingItem
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AddRecipeViewModel(
-    private val repository: LocalRecipeRepository
+    private val recipeRepository: LocalRecipeRepository,
+    private val shoppingItemDao: ShoppingItemDao
 ) : ViewModel() {
 
     private val _myRecipes = MutableStateFlow<List<UserRecipe>>(emptyList())
@@ -22,7 +25,7 @@ class AddRecipeViewModel(
 
     fun addRecipe(recipe: UserRecipe, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            repository.addRecipe(recipe)
+            recipeRepository.addRecipe(recipe)
             loadMyRecipes()
             onSuccess()
         }
@@ -30,14 +33,15 @@ class AddRecipeViewModel(
 
     fun deleteRecipe(recipe: UserRecipe) {
         viewModelScope.launch {
-            repository.deleteRecipe(recipe)
+            recipeRepository.deleteRecipe(recipe)
             loadMyRecipes()
         }
     }
 
+    
     private fun loadMyRecipes() {
         viewModelScope.launch {
-            repository.getAllRecipes().collect { recipes ->
+            recipeRepository.getAllRecipes().collect { recipes ->
                 _myRecipes.value = recipes
             }
         }
