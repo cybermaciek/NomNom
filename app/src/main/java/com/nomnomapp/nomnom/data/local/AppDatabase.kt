@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.nomnomapp.nomnom.data.local.dao.FavoriteDao
 import com.nomnomapp.nomnom.data.local.dao.ShoppingItemDao
 import com.nomnomapp.nomnom.data.local.dao.UserRecipeDao
+import com.nomnomapp.nomnom.data.local.entity.FavoriteEntity
 import com.nomnomapp.nomnom.data.local.entity.ShoppingItem
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
 

@@ -10,9 +10,6 @@ interface MealApi {
     @GET("search.php")
     suspend fun searchMealsByName(@Query("s") query: String): MealResponse
 
-    @GET("random.php")
-    suspend fun getRandomMeal(): MealResponse
-
     @GET("lookup.php")
     suspend fun lookupMealById(@Query("i") mealId: String): MealResponse
 
