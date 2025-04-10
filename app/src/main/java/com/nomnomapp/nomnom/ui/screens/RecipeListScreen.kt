@@ -2,12 +2,15 @@ package com.nomnomapp.nomnom.ui.screens
 
 import android.content.res.Configuration
 import android.media.MediaPlayer
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +41,7 @@ import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import kotlinx.coroutines.delay
@@ -293,15 +297,51 @@ fun RecipeCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize()
             )
-            Box(modifier = Modifier
-                .align(Alignment.TopEnd)
-                .background(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
             ) {
-                AnimatedFavoriteIcon(
-                    isFavorite = isFavorite,
-                    onToggle = { onFavoriteClick(recipe) }
-                )
 
+                if (recipe.id.startsWith("user_")) {
+                    var menuExpanded by remember { mutableStateOf(false) }
+
+                    Box {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Menu",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false },
+                            modifier = Modifier.clip(RoundedCornerShape(20.dp))
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Edit") },
+                                onClick = { /* TODO: open edit */ }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Delete") },
+                                onClick = { /* TODO: confirm and delete */ }
+                            )
+                        }
+                    }
+                } else {
+                    Spacer(modifier = Modifier.size(48.dp))
+                }
+
+                IconButton(onClick = { onFavoriteClick(recipe) }) {
+                    AnimatedFavoriteIcon(
+                        isFavorite = isFavorite,
+                        onToggle = { onFavoriteClick(recipe) }
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -371,86 +411,53 @@ fun AnimatedFavoriteIcon(
     onToggle: () -> Unit
 ) {
     val context = LocalContext.current
-    var triggerExplosion by remember { mutableStateOf(false) }
 
-    val scale by animateFloatAsState(
-        targetValue = if (isFavorite) 1.5f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-    )
-
+    val scale = remember { Animatable(1f) }
     val heartColor by animateColorAsState(
-        targetValue = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onBackground
+        targetValue = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onBackground,
+        animationSpec = tween(durationMillis = 300)
     )
 
-    // Okrągłe tło
+    LaunchedEffect(isFavorite) {
+        if (isFavorite) {
+            scale.animateTo(
+                targetValue = 1.5f,
+                animationSpec = tween(durationMillis = 150)
+            )
+            scale.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 150)
+            )
+        }
+    }
+
     Box(
-        contentAlignment = Alignment.Center,
         modifier = Modifier
             .size(52.dp)
             .graphicsLayer(
-                scaleX = scale,
-                scaleY = scale
+                scaleX = scale.value,
+                scaleY = scale.value
             )
             .clip(CircleShape)
             .clickable {
                 onToggle()
-                triggerExplosion = true
-
-                // Odtwarzanie dźwięku
                 MediaPlayer.create(context, R.raw.pop)?.apply {
                     setOnCompletionListener { release() }
                     start()
                 }
-            }
+            },
+        contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = if (isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-            contentDescription = "Favourite",
+            contentDescription = "Favorite",
             tint = heartColor
         )
-
-        if (triggerExplosion) {
-            LaunchedEffect(Unit) {
-                delay(500)
-                triggerExplosion = false
-            }
-            HeartExplosionAnimation()
-        }
     }
 }
 
-@Composable
-fun HeartExplosionAnimation() {
-    val hearts = remember { List(6) { Animatable(0f) } }
 
-    LaunchedEffect(Unit) {
-        hearts.forEachIndexed { index, anim ->
-            launch {
-                delay(index * 50L)
-                anim.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(durationMillis = 400)
-                )
-            }
-        }
-    }
 
-    hearts.forEachIndexed { index, anim ->
-        val angle = 100f * index // rozrzut serduszek
-
-        val offsetX = anim.value * cos(Math.toRadians(angle.toDouble())).toFloat() * 40
-        val offsetY = -anim.value * sin(Math.toRadians(angle.toDouble())).toFloat() * 40
-
-        Icon(
-            imageVector = Icons.Outlined.Favorite,
-            contentDescription = null,
-            tint = Color.Red.copy(alpha = 1f - anim.value),
-            modifier = Modifier
-                .offset(x = offsetX.dp, y = offsetY.dp)
-                .size((16 + 8 * (1 - anim.value)).dp)
-        )
-    }
-}
 
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")

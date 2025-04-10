@@ -1,5 +1,3 @@
-// RecipeDetailScreen.kt – stara wersja UI (ładniejsza i kompatybilna)
-
 package com.nomnomapp.nomnom.ui.screens
 
 import androidx.compose.foundation.Image
@@ -11,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -111,6 +110,7 @@ fun MealDetailContent(
                                 )
                             }
                         }
+
                         item {
                             Text(
                                 text = meal.title,
@@ -200,20 +200,65 @@ fun MealDetailContent(
                             Spacer(modifier = Modifier.height(24.dp))
                         }
                     }
-                    Box(
+                    Row(
                         modifier = Modifier
                             .padding(16.dp)
-                            .size(48.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
-                            .clickable { onBackClick() },
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                        IconButton(
+                            onClick = { onBackClick() },
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.0f))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.ArrowBack,
+                                contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        if (meal?.id?.startsWith("user_") == true) {
+                            var menuExpanded by remember { mutableStateOf(false) }
+
+                            Box(//kolejny box który ma fillMaxWidth() i pozwoli to na ustawienie TopEnd jako align
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Box(
+                                    modifier = Modifier.align(Alignment.TopEnd)
+                                ) {
+                                    IconButton(
+                                        onClick = { menuExpanded = true },
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(50))
+                                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.0f))
+                                    ) {
+                                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                                    }
+
+                                    DropdownMenu(
+                                        expanded = menuExpanded,
+                                        onDismissRequest = { menuExpanded = false },
+                                        modifier = Modifier.clip(RoundedCornerShape(20.dp)) // zaokrąglenie całego menu
+                                    ) {
+                                        DropdownMenuItem(
+                                            text = { Text("Edit") },
+                                            onClick = { /* TODO: open edit screen */ }
+                                        )
+                                        DropdownMenuItem(
+                                            text = { Text("Delete") },
+                                            onClick = { /* TODO: confirm and delete */ }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
                 else -> Text(
