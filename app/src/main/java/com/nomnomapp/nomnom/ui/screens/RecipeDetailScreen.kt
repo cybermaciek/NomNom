@@ -1,41 +1,58 @@
+// RecipeDetailScreen.kt – stara wersja UI (ładniejsza i kompatybilna)
+
 package com.nomnomapp.nomnom.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
+import com.nomnomapp.nomnom.data.local.DatabaseProvider
+import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.model.Recipe
-import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
-
+import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
 
 @Composable
 fun RecipeDetailScreen(
     mealId: String,
-    viewModel: RecipeDetailViewModel,
     navController: NavController
 ) {
+    val context = LocalContext.current
+    val db = remember { DatabaseProvider.getDatabase(context) }
+
+    val viewModel: RecipeDetailViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val localRepo = LocalRecipeRepository(db.userRecipeDao())
+                return RecipeDetailViewModel(localRepository = localRepo) as T
+            }
+        }
+    )
+
     val mealState by viewModel.mealState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -48,9 +65,7 @@ fun RecipeDetailScreen(
         meal = mealState,
         isLoading = isLoading,
         errorMessage = errorMessage,
-        onBackClick = {
-            navController.popBackStack()
-        }
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -61,23 +76,19 @@ fun MealDetailContent(
     errorMessage: String?,
     onBackClick: () -> Unit
 ) {
-    Scaffold(){ contentPadding ->
-        Box(modifier = Modifier
+    Scaffold { contentPadding ->
+        Box(
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding)
-            )
-        {
+        ) {
             when {
-                isLoading -> {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
-                }
-                errorMessage != null -> {
-                    Text(
-                        text = "Error: $errorMessage",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+                isLoading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
+                errorMessage != null -> Text(
+                    text = "Error: $errorMessage",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.align(Alignment.Center)
+                )
                 meal != null -> {
                     LazyColumn(
                         modifier = Modifier
@@ -204,20 +215,16 @@ fun MealDetailContent(
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-
                 }
-                else -> {
-                    Text(
-                        text = "No meal found",
-                        modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
+                else -> Text(
+                    text = "No meal found",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
         }
     }
 }
-
 @Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO, name = "Light")
 @Composable
 fun MealDetailContentLightPreview() {

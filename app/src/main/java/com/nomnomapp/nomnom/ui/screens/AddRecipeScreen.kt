@@ -36,18 +36,18 @@ import com.nomnomapp.nomnom.data.local.AppDatabase
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.viewmodel.AddRecipeViewModel
+import android.util.Log
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecipeScreen(navController: NavController) {
+
     val context = LocalContext.current
     val db = remember {
-        Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "nomnom.db"
-        ).fallbackToDestructiveMigration().build()
+        com.nomnomapp.nomnom.data.local.DatabaseProvider.getDatabase(context)
     }
+
     val viewModel = remember {
         AddRecipeViewModel(
             recipeRepository = LocalRecipeRepository(db.userRecipeDao()),
@@ -72,7 +72,6 @@ fun AddRecipeScreen(navController: NavController) {
             error(R.drawable.recipe_placeholder)
         }
     )
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -87,6 +86,7 @@ fun AddRecipeScreen(navController: NavController) {
                     )
                     viewModel.addRecipe(recipe) {
                         navController.popBackStack()
+                        Log.d("ADD_RECIPE", "Saved recipe: $recipe")
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.primary,

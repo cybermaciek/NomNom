@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -83,12 +86,21 @@ class MainActivity : ComponentActivity() {
                         arguments = listOf(navArgument("mealId") { type = NavType.StringType })
                     ) { backStackEntry ->  // Fixed: Added proper parameter name
                         val mealId = backStackEntry.arguments?.getString("mealId") ?: ""
-                        val viewModel: RecipeDetailViewModel = viewModel()
+                        val context = LocalContext.current
+                        val db = remember { com.nomnomapp.nomnom.data.local.DatabaseProvider.getDatabase(context) }
+                        val viewModel: RecipeDetailViewModel = viewModel(
+                            factory = object : ViewModelProvider.Factory {
+                                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                    val localRepo = com.nomnomapp.nomnom.data.repository.LocalRecipeRepository(db.userRecipeDao())
+                                    return RecipeDetailViewModel(localRepository = localRepo) as T
+                                }
+                            }
+                        )
                         RecipeDetailScreen(
                             mealId = mealId,
-                            viewModel = viewModel,
                             navController = navController
                         )
+
                     }
 
                     composable(Routes.ADD_RECIPE.route) {

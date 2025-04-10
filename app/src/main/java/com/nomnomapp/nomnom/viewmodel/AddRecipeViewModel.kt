@@ -1,5 +1,6 @@
 package com.nomnomapp.nomnom.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nomnomapp.nomnom.data.local.dao.ShoppingItemDao
@@ -26,8 +27,9 @@ class AddRecipeViewModel(
     fun addRecipe(recipe: UserRecipe, onSuccess: () -> Unit) {
         viewModelScope.launch {
             recipeRepository.addRecipe(recipe)
-            loadMyRecipes()
+            Log.d("RECIPE_SAVE", "PRZEPIS ZAPISANY: $recipe")
             onSuccess()
+
         }
     }
 

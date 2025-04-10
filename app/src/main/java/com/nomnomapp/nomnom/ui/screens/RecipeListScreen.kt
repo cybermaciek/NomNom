@@ -45,20 +45,36 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 import com.nomnomapp.nomnom.R
-
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun RecipeListScreen(
     navController: NavController,
-    onNavigateToMealDetail: (String) -> Unit,
-    viewModel: RecipeListViewModel = viewModel()
+    onNavigateToMealDetail: (String) -> Unit
 ) {
+    val context = LocalContext.current
+    val db = remember {
+        com.nomnomapp.nomnom.data.local.DatabaseProvider.getDatabase(context)
+    }
+
+    val viewModel: RecipeListViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val localRepo = com.nomnomapp.nomnom.data.repository.LocalRecipeRepository(db.userRecipeDao())
+                return RecipeListViewModel(localRepository = localRepo) as T
+            }
+        }
+    )
+
     val recipes by viewModel.recipes.collectAsState()
 
     LaunchedEffect(Unit) {
-        //viewModel.searchRecipes("Chicken")
+        viewModel.loadAllRecipes()
         viewModel.loadFilters()
     }
+
 
     RecipeListScreenView(
         recipes = recipes,
@@ -66,9 +82,10 @@ fun RecipeListScreen(
         navController = navController,
         viewModel = viewModel,
         onBackClick = { navController.popBackStack() },
-        onSettingsClick = { navController.navigate(Routes.SETTINGS.route) }
+        onSettingsClick = { navController.navigate(com.nomnomapp.nomnom.ui.navigation.Routes.SETTINGS.route) }
     )
 }
+
 
 @Composable
 fun RecipeListScreenView(

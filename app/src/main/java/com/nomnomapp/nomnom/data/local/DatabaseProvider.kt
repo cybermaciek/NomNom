@@ -12,7 +12,9 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "nomnom_database"
-            ).build().also { INSTANCE = it }
+            )
+            .fallbackToDestructiveMigration() // 🔥 To pozwala usunąć i odtworzyć bazę przy zmianach
+            .build().also { INSTANCE = it }
         }
     }
 }
