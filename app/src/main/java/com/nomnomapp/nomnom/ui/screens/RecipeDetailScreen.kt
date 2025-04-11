@@ -34,6 +34,11 @@ import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
+import com.nomnomapp.nomnom.ui.navigation.Routes
+import androidx.navigation.compose.rememberNavController
+
+
+
 
 @Composable
 fun RecipeDetailScreen(
@@ -69,7 +74,8 @@ fun RecipeDetailScreen(
             viewModel.deleteUserRecipeById(recipeId) {
                 navController.popBackStack()
             }
-        }
+        },
+        navController = navController
     )
 }
 
@@ -79,7 +85,8 @@ fun MealDetailContent(
     isLoading: Boolean,
     errorMessage: String?,
     onBackClick: () -> Unit,
-    onDelete: (Int) -> Unit
+    onDelete: (Int) -> Unit,
+    navController: NavController
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
@@ -109,7 +116,12 @@ fun MealDetailContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(400.dp)
-                                    .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+                                    .clip(
+                                        RoundedCornerShape(
+                                            bottomStart = 24.dp,
+                                            bottomEnd = 24.dp
+                                        )
+                                    )
                             ) {
                                 Image(
                                     painter = rememberImagePainter(meal.imageUrl),
@@ -243,7 +255,11 @@ fun MealDetailContent(
                                         modifier = Modifier
                                             .size(48.dp)
                                             .clip(RoundedCornerShape(50))
-                                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.0f))
+                                            .background(
+                                                MaterialTheme.colorScheme.background.copy(
+                                                    alpha = 0.0f
+                                                )
+                                            )
                                     ) {
                                         Icon(Icons.Default.MoreVert, contentDescription = "Menu")
                                     }
@@ -257,7 +273,10 @@ fun MealDetailContent(
                                             text = { Text("Edit") },
                                             onClick = {
                                                 menuExpanded = false
-                                                // TODO: open edit screen
+                                                val id = meal.id.removePrefix("user_").toIntOrNull()
+                                                if (id != null) {
+                                                    navController.navigate(Routes.editRecipeRoute(id))
+                                                }
                                             }
                                         )
                                         DropdownMenuItem(
@@ -315,32 +334,7 @@ fun MealDetailContent(
 @Composable
 fun MealDetailContentLightPreview() {
     NomNomTheme {
-        MealDetailContent(
-            meal = Recipe(
-                id = "user_1", // ← lepiej użyć user_ dla przepisów użytkownika
-                title = "Spaghetti Carbonara",
-                imageUrl = "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
-                category = "Pasta",
-                area = "Italian",
-                instructions = "1. Cook pasta\n2. Mix eggs and cheese\n3. Add pancetta\n4. Combine everything",
-                ingredients = listOf("Spaghetti", "Eggs", "Cheese", "Pancetta")
-            ),
-            isLoading = false,
-            errorMessage = null,
-            onBackClick = {},
-            onDelete = {}
-        )
-    }
-}
-
-@Preview(
-    showBackground = true,
-    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
-    name = "Dark Theme"
-)
-@Composable
-fun MealDetailContentDarkPreview() {
-    NomNomTheme {
+        val navController = rememberNavController()
         MealDetailContent(
             meal = Recipe(
                 id = "user_1",
@@ -354,7 +348,36 @@ fun MealDetailContentDarkPreview() {
             isLoading = false,
             errorMessage = null,
             onBackClick = {},
-            onDelete = {}
+            onDelete = {},
+            navController = navController
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Theme"
+)
+@Composable
+fun MealDetailContentDarkPreview() {
+    NomNomTheme {
+        val navController = rememberNavController()
+        MealDetailContent(
+            meal = Recipe(
+                id = "user_1",
+                title = "Spaghetti Carbonara",
+                imageUrl = "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
+                category = "Pasta",
+                area = "Italian",
+                instructions = "1. Cook pasta\n2. Mix eggs and cheese\n3. Add pancetta\n4. Combine everything",
+                ingredients = listOf("Spaghetti", "Eggs", "Cheese", "Pancetta")
+            ),
+            isLoading = false,
+            errorMessage = null,
+            onBackClick = {},
+            onDelete = {},
+            navController = navController
         )
     }
 }

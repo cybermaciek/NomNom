@@ -1,5 +1,6 @@
 package com.nomnomapp.nomnom.ui.screens
 
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,36 +30,48 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.room.Room
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.R
-import com.nomnomapp.nomnom.data.local.AppDatabase
+import com.nomnomapp.nomnom.data.local.DatabaseProvider
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.viewmodel.AddRecipeViewModel
-import android.util.Log
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.util.*
+
+//zdj zapisywane w /data/data/com.nomnomapp.nomnom/files/recipe_image_<UUID>.jpg
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRecipeScreen(navController: NavController) {
-
+fun AddRecipeScreen(
+    navController: NavController,
+    editRecipeId: Int? = null
+) {
     val context = LocalContext.current
-    val db = remember {
-        com.nomnomapp.nomnom.data.local.DatabaseProvider.getDatabase(context)
-    }
-
-    val viewModel = remember {
-        AddRecipeViewModel(
-            recipeRepository = LocalRecipeRepository(db.userRecipeDao())
-        )
-    }
-
+    val db = remember { DatabaseProvider.getDatabase(context) }
+    val repository = remember { LocalRecipeRepository(db.userRecipeDao()) }
+    val viewModel = remember { AddRecipeViewModel(recipeRepository = repository) }
 
     var title by remember { mutableStateOf("") }
     var instructions by remember { mutableStateOf("") }
     val ingredientList = remember { mutableStateListOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    LaunchedEffect(editRecipeId) {
+        if (editRecipeId != null) {
+            val recipe = repository.getRecipeById(editRecipeId)
+            recipe?.let {
+                title = it.title
+                instructions = it.instructions
+                imageUri = it.imageUri?.let { uriStr -> Uri.parse(uriStr) }
+                ingredientList.clear()
+                ingredientList.addAll(it.ingredients.split(",").map { it.trim() })
+            }
+        }
+    }
 
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -72,21 +85,45 @@ fun AddRecipeScreen(navController: NavController) {
             error(R.drawable.recipe_placeholder)
         }
     )
+
+    fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+        return try {
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            val fileName = "recipe_image_${UUID.randomUUID()}.jpg"
+            val file = File(context.filesDir, fileName)
+            val outputStream = FileOutputStream(file)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    val savedImagePath = imageUri?.let { saveImageToInternalStorage(context, it) }
                     val recipe = UserRecipe(
+                        id = editRecipeId ?: 0,
                         title = title,
                         category = "",
                         area = "",
                         instructions = instructions,
                         ingredients = ingredientList.joinToString(","),
-                        imageUri = imageUri?.toString()
+                        imageUri = savedImagePath
                     )
-                    viewModel.addRecipe(recipe) {
-                        navController.popBackStack()
-                        Log.d("ADD_RECIPE", "Saved recipe: $recipe")
+                    if (editRecipeId != null) {
+                        viewModel.updateRecipe(recipe) {
+                            navController.popBackStack()
+                        }
+                    } else {
+                        viewModel.addRecipe(recipe) {
+                            navController.popBackStack()
+                        }
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -115,7 +152,7 @@ fun AddRecipeScreen(navController: NavController) {
                         Icon(Icons.Outlined.ArrowBack, contentDescription = "Back")
                     }
                     Text(
-                        "Add Recipe",
+                        if (editRecipeId != null) "Edit Recipe" else "Add Recipe",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -145,14 +182,15 @@ fun AddRecipeScreen(navController: NavController) {
                             .background(Color.Black.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(modifier =Modifier.padding(top = 150.dp),horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
+                        Column(
+                            modifier = Modifier.padding(top = 150.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Icon(
                                 imageVector = Icons.Outlined.AddAPhoto,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(48.dp)
-
                             )
                             Text("Tap to add photo", color = Color.White)
                         }
@@ -209,8 +247,6 @@ fun AddRecipeScreen(navController: NavController) {
                     Text("Add Ingredient")
                 }
             }
-
         }
     }
 }
-

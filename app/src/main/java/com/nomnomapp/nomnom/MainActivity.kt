@@ -109,6 +109,17 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable(
+                        route = Routes.EDIT_RECIPE.route,
+                        arguments = listOf(navArgument("id") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val id = backStackEntry.arguments?.getInt("id") ?: return@composable
+                        AddRecipeScreen(
+                            navController = navController,
+                            editRecipeId = id
+                        )
+                    }
+
                     composable(Routes.CREATE_USER.route) {
                             CreateUserScreen(
                                 onNavigateToHome = {

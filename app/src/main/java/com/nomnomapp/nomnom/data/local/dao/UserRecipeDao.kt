@@ -24,4 +24,9 @@ interface UserRecipeDao {
 
     @Delete
     suspend fun delete(recipe: UserRecipe)
+
+    @Update
+    suspend fun update(recipe: UserRecipe)
+
 }
+

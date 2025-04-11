@@ -25,12 +25,10 @@ class AddRecipeViewModel(
             onSuccess()
         }
     }
-
-    fun deleteUserRecipeById(id: Int, onSuccess: () -> Unit) {
+    fun updateRecipe(recipe: UserRecipe, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            recipeRepository.deleteUserRecipeById(id)
+            recipeRepository.updateRecipe(recipe)
             onSuccess()
         }
     }
-
 }
