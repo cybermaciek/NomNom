@@ -1,4 +1,3 @@
-// com.nomnomapp.nomnom.ui.screens/SettingsScreen.kt
 package com.nomnomapp.nomnom.ui.screens
 
 import android.content.ClipData
@@ -148,6 +147,42 @@ fun SettingsScreenView(
                 }
             }
 
+            Button(
+                onClick = {
+                    val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
+                    clipboard?.setPrimaryClip(
+                        ClipData.newPlainText("", "https://github.com/cybermaciek/NomNom")
+                    )
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
+                shape = RoundedCornerShape(15.dp),
+                modifier = Modifier
+                    .padding(top = 8.dp, bottom = 8.dp)
+                    .fillMaxWidth()
+                    .height(60.dp)
+            ) {
+                Row(modifier = Modifier
+                    .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = "Share",
+                        tint = MaterialTheme.colorScheme.background,
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                            .size(36.dp)
+                    )
+                    Text(
+                        text = "Share app",
+                        color = MaterialTheme.colorScheme.background,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+            }
+
             HorizontalDivider(
                 thickness = 2.dp,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -195,80 +230,6 @@ fun SettingsScreenView(
                             )
                         }
                     }
-                }
-            }
-
-            HorizontalDivider(
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .padding(top = 8.dp, bottom = 8.dp)
-            )
-
-            Button(
-                onClick = {
-                    val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
-                    clipboard?.setPrimaryClip(
-                        ClipData.newPlainText("", "https://github.com/cybermaciek/NomNom")
-                    )
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
-                shape = RoundedCornerShape(15.dp),
-                modifier = Modifier
-                    .padding(top = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth()
-                    .height(60.dp)
-            ) {
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = "Share",
-                        tint = MaterialTheme.colorScheme.background,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .size(36.dp)
-                    )
-                    Text(
-                        text = "Share app",
-                        color = MaterialTheme.colorScheme.background,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                }
-            }
-
-            Button(
-                onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
-                shape = RoundedCornerShape(15.dp),
-                modifier = Modifier
-                    .padding(top = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth()
-                    .height(60.dp)
-            ) {
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_delete),
-                        contentDescription = "Restore data",
-                        tint = MaterialTheme.colorScheme.background,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .size(36.dp)
-                    )
-                    Text(
-                        text = "Restore data",
-                        color = MaterialTheme.colorScheme.background,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
                 }
             }
 

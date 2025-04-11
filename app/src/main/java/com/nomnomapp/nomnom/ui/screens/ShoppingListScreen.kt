@@ -13,10 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -196,145 +196,156 @@ fun ShoppingListScreenView(
                         .fillMaxWidth()
                         .height(50.dp)
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
             }
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .verticalScroll(rememberScrollState())
                     .weight(1f)
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
 
                 if (toBuyItems.isNotEmpty()) {
-                    Text(
-                        "To buy",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        toBuyItems.forEach { item ->
-                            var showDeleteDialog by remember { mutableStateOf(false) }
+                    item {
+                        Column {
+                            Text(
+                                "To buy",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
 
-                            if (showDeleteDialog) {
-                                AlertDialog(
-                                    onDismissRequest = { showDeleteDialog = false },
-                                    title = { Text("Delete item") },
-                                    text = { Text("Are you sure you want to delete \"$item\"?") },
-                                    confirmButton = {
-                                        TextButton(
-                                            onClick = {
-                                                onDeleteItem(item)
-                                                showDeleteDialog = false
-                                            }
-                                        ) {
-                                            Text("Delete")
-                                        }
-                                    },
-                                    dismissButton = {
-                                        TextButton(
-                                            onClick = { showDeleteDialog = false }
-                                        ) {
-                                            Text("Cancel")
-                                        }
-                                    }
-                                )
-                            }
+                    items(toBuyItems) { item ->
+                        var showDeleteDialog by remember { mutableStateOf(false) }
 
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .pointerInput(item) {
-                                        detectTapGestures(
-                                            onTap = { onRemoveItem(item) },
-                                            onLongPress = { showDeleteDialog = true }
-                                        )
+                        if (showDeleteDialog) {
+                            AlertDialog(
+                                onDismissRequest = { showDeleteDialog = false },
+                                title = { Text("Delete item") },
+                                text = { Text("Are you sure you want to delete \"$item\"?") },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            onDeleteItem(item)
+                                            showDeleteDialog = false
+                                        }
+                                    ) {
+                                        Text("Delete")
                                     }
-                                    .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
-                                    .padding(12.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(item, color = Color.White)
-                                    Icon(
-                                        imageVector = Icons.Filled.Close,
-                                        contentDescription = "Remove",
-                                        tint = Color.White
+                                },
+                                dismissButton = {
+                                    TextButton(
+                                        onClick = { showDeleteDialog = false }
+                                    ) {
+                                        Text("Cancel")
+                                    }
+                                }
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .pointerInput(item) {
+                                    detectTapGestures(
+                                        onTap = { onRemoveItem(item) },
+                                        onLongPress = { showDeleteDialog = true }
                                     )
                                 }
+                                .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
+                                .padding(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(item, color = Color.White)
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Remove",
+                                    tint = Color.White
+                                )
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
 
                 if (recentItems.isNotEmpty()) {
-                    Text(
-                        "Shopping history",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        recentItems.forEach { item ->
-                            var showDeleteDialog by remember { mutableStateOf(false) }
+                    item {
+                        Column {
+                            Text(
+                                "Shopping history",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
 
-                            if (showDeleteDialog) {
-                                AlertDialog(
-                                    onDismissRequest = { showDeleteDialog = false },
-                                    title = { Text("Delete item") },
-                                    text = { Text("Are you sure you want to delete \"$item\"?") },
-                                    confirmButton = {
-                                        TextButton(
-                                            onClick = {
-                                                onDeleteItem(item)
-                                                showDeleteDialog = false
-                                            }
-                                        ) { Text("Delete") }
-                                    },
-                                    dismissButton = {
-                                        TextButton(
-                                            onClick = { showDeleteDialog = false }
-                                        ) { Text("Cancel") }
-                                    }
-                                )
-                            }
+                    items(recentItems) { item ->
+                        var showDeleteDialog by remember { mutableStateOf(false) }
 
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .pointerInput(item) {
-                                        detectTapGestures(
-                                            onTap = { onAddItem(item) },
-                                            onLongPress = { showDeleteDialog = true }
-                                        )
-                                    }
-                                    .background(Color.Gray, shape = RoundedCornerShape(15.dp))
-                                    .padding(12.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(item, color = Color.White)
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Add",
-                                        tint = Color.White
+                        if (showDeleteDialog) {
+                            AlertDialog(
+                                onDismissRequest = { showDeleteDialog = false },
+                                title = { Text("Delete item") },
+                                text = { Text("Are you sure you want to delete \"$item\"?") },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            onDeleteItem(item)
+                                            showDeleteDialog = false
+                                        }
+                                    ) { Text("Delete") }
+                                },
+                                dismissButton = {
+                                    TextButton(
+                                        onClick = { showDeleteDialog = false }
+                                    ) { Text("Cancel") }
+                                }
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .pointerInput(item) {
+                                    detectTapGestures(
+                                        onTap = { onAddItem(item) },
+                                        onLongPress = { showDeleteDialog = true }
                                     )
                                 }
+                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                                .padding(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(item, color = Color.White)
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add",
+                                    tint = Color.White
+                                )
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
