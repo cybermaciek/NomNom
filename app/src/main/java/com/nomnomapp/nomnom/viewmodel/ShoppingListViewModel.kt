@@ -47,4 +47,12 @@ class ShoppingListViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
+    fun deleteItem(name: String) {
+        viewModelScope.launch {
+            shoppingItemDao.searchItems(name).firstOrNull()?.let { item ->
+                shoppingItemDao.delete(item)
+            }
+        }
+    }
 }

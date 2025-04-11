@@ -2,6 +2,7 @@ package com.nomnomapp.nomnom.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +65,7 @@ fun ShoppingListScreen(
         onSearchQueryChanged = { viewModel.updateSearchQuery(it) },
         onAddItem = { viewModel.addOrRemoveItem(it) },
         onRemoveItem = { viewModel.moveToRecent(it) },
+        onDeleteItem = { viewModel.deleteItem(it) },
         onBackClick = { navController?.popBackStack() },
         onSettingsClick = { navController?.navigate(Routes.SETTINGS.route) }
     )
@@ -76,6 +79,7 @@ fun ShoppingListScreenView(
     onSearchQueryChanged: (String) -> Unit,
     onAddItem: (String) -> Unit,
     onRemoveItem: (String) -> Unit,
+    onDeleteItem: (String) -> Unit,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
@@ -194,7 +198,12 @@ fun ShoppingListScreenView(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onRemoveItem(item) }
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onTap = { onRemoveItem(item) },
+                                        onLongPress = { onDeleteItem(item) }
+                                    )
+                                }
                                 .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -217,7 +226,12 @@ fun ShoppingListScreenView(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onAddItem(item) }
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onTap = { onAddItem(item) },
+                                        onLongPress = { onDeleteItem(item) }
+                                    )
+                                }
                                 .background(Color.Gray, shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -244,6 +258,7 @@ fun ShoppingListScreenPreview() {
             onSearchQueryChanged = {},
             onAddItem = {},
             onRemoveItem = {},
+            onDeleteItem = {},
             onBackClick = {},
             onSettingsClick = {}
         )
