@@ -14,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
+import com.nomnomapp.nomnom.data.repository.RecipeRepository
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.screens.*
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
@@ -91,11 +93,16 @@ class MainActivity : ComponentActivity() {
                         val viewModel: RecipeDetailViewModel = viewModel(
                             factory = object : ViewModelProvider.Factory {
                                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                    val localRepo = com.nomnomapp.nomnom.data.repository.LocalRecipeRepository(db.userRecipeDao())
-                                    return RecipeDetailViewModel(localRepository = localRepo) as T
+                                    val localRepo = LocalRecipeRepository(db.userRecipeDao())
+                                    val recipeRepo = RecipeRepository(db.cachedRecipeDao())
+                                    return RecipeDetailViewModel(
+                                        apiRepository = recipeRepo,
+                                        localRepository = localRepo
+                                    ) as T
                                 }
                             }
                         )
+
                         RecipeDetailScreen(
                             mealId = mealId,
                             navController = navController

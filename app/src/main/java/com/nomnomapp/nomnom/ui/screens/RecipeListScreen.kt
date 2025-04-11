@@ -63,21 +63,18 @@ fun RecipeListScreen(
     onNavigateToMealDetail: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val db = remember {
-        com.nomnomapp.nomnom.data.local.DatabaseProvider.getDatabase(context)
-    }
+    val db = remember { DatabaseProvider.getDatabase(context) }
 
     val viewModel: RecipeListViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val db = DatabaseProvider.getDatabase(context)
                 val localRepo = LocalRecipeRepository(db.userRecipeDao())
                 val favoriteRepo = FavoriteRepository(db.favoriteDao())
-                return RecipeListViewModel(localRepo, apiRepository = RecipeRepository(), favoriteRepository = favoriteRepo) as T
+                val recipeRepo = RecipeRepository(db.cachedRecipeDao())
+                return RecipeListViewModel(localRepo, recipeRepo, favoriteRepo) as T
             }
         }
     )
-
 
     val recipes by viewModel.recipes.collectAsState()
 
@@ -86,17 +83,15 @@ fun RecipeListScreen(
         viewModel.loadFilters()
     }
 
-
     RecipeListScreenView(
         recipes = recipes,
         onNavigateToMealDetail = onNavigateToMealDetail,
         navController = navController,
         viewModel = viewModel,
         onBackClick = { navController.popBackStack() },
-        onSettingsClick = { navController.navigate(com.nomnomapp.nomnom.ui.navigation.Routes.SETTINGS.route) }
+        onSettingsClick = { navController.navigate(Routes.SETTINGS.route) }
     )
 }
-
 
 @Composable
 fun RecipeListScreenView(
@@ -109,11 +104,17 @@ fun RecipeListScreenView(
 ) {
     var search by remember { mutableStateOf("") }
     val favoriteIds by viewModel.favoriteIds.collectAsState()
-   var showOnlyUserRecipes by remember { mutableStateOf(false) }
-
+    var showOnlyUserRecipes by remember { mutableStateOf(false) }
 
     val categories by viewModel.categories.collectAsState()
     val areas by viewModel.areas.collectAsState()
+    val usingCache by viewModel.usingCache.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(usingCache) {
+        if (usingCache) snackbarHostState.showSnackbar("No internet - showing data from memory")
+    }
 
     var selectedCategory by remember { mutableStateOf("All") }
     var selectedArea by remember { mutableStateOf("All") }
@@ -127,16 +128,12 @@ fun RecipeListScreenView(
                 (!showOnlyUserRecipes || recipe.id.startsWith("user_"))
     }
 
-
     LaunchedEffect(search) {
-        if (search.isNotBlank()) {
-            viewModel.searchRecipes(search)
-        } else {
-            viewModel.searchRecipes("")
-        }
+        if (search.isNotBlank()) viewModel.searchRecipes(search) else viewModel.searchRecipes("")
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Routes.ADD_RECIPE.route) },
@@ -266,9 +263,7 @@ fun RecipeListScreenView(
                     RecipeCard(
                         recipe = recipe,
                         isFavorite = favoriteIds.contains(recipe.id),
-                        onFavoriteClick = {
-                            viewModel.toggleFavorite(recipe.id)
-                        },
+                        onFavoriteClick = { viewModel.toggleFavorite(it.id) },
                         onCardClick = { clicked ->
                             onNavigateToMealDetail(clicked.id)
                         },

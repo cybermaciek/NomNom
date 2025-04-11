@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
     private val localRepository: LocalRecipeRepository,
-    private val apiRepository: RecipeRepository = RecipeRepository(),
+    private val apiRepository: RecipeRepository,
     private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
 
@@ -30,9 +30,13 @@ class RecipeListViewModel(
     private val _areas = MutableStateFlow<List<String>>(emptyList())
     val areas: StateFlow<List<String>> = _areas
 
+    private val _usingCache = MutableStateFlow(false)
+    val usingCache: StateFlow<Boolean> = _usingCache
+
     init {
         loadFavorites()
     }
+
     private fun loadFavorites() {
         viewModelScope.launch {
             favoriteRepository.getAll().collect { list ->
@@ -53,7 +57,17 @@ class RecipeListViewModel(
 
     fun loadAllRecipes() {
         viewModelScope.launch {
-            val apiRecipes = apiRepository.searchRecipes("")
+            val apiRecipes = try {
+                val fromApi = apiRepository.searchRecipes("")
+                apiRepository.cacheRecipes(fromApi)
+                _usingCache.value = false
+                fromApi
+            } catch (e: Exception) {
+                Log.w("RECIPE_VM", "Brak internetu – używam cache: ${e.message}")
+                _usingCache.value = true
+                apiRepository.getCachedRecipes()
+            }
+
             val localRecipes = localRepository.getAllRecipesOnce().map { it.toRecipe() }
             _recipes.value = apiRecipes + localRecipes
 
@@ -63,11 +77,18 @@ class RecipeListViewModel(
 
     fun searchRecipes(query: String) {
         viewModelScope.launch {
-            val api = apiRepository.searchRecipes(query)
-            val local = localRepository.searchRecipes(query).map { it.toRecipe() }
-            _recipes.value = api + local
+            val apiRecipes = try {
+                apiRepository.searchRecipes(query)
+            } catch (e: Exception) {
+                Log.w("RECIPE_VM", "search fallback to cache")
+                apiRepository.getCachedRecipes().filter { it.title.contains(query, ignoreCase = true) }
+            }
+
+            val localRecipes = localRepository.searchRecipes(query).map { it.toRecipe() }
+            _recipes.value = apiRecipes + localRecipes
         }
     }
+
     fun deleteUserRecipeById(id: Int, onSuccess: () -> Unit) {
         viewModelScope.launch {
             localRepository.deleteUserRecipeById(id)
@@ -78,8 +99,12 @@ class RecipeListViewModel(
 
     fun loadFilters() {
         viewModelScope.launch {
-            _categories.value = listOf("All") + apiRepository.getCategories()
-            _areas.value = listOf("All") + apiRepository.getAreas()
+            try {
+                _categories.value = listOf("All") + apiRepository.getCategories()
+                _areas.value = listOf("All") + apiRepository.getAreas()
+            } catch (e: Exception) {
+                Log.w("RECIPE_VM", "Nie udało sie załadować filtrów: ${e.message}")
+            }
         }
     }
 
@@ -94,5 +119,4 @@ class RecipeListViewModel(
             area = this.area
         )
     }
-
 }

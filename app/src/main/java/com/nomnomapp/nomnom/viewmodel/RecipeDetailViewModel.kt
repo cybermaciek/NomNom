@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class RecipeDetailViewModel(
-    private val apiRepository: RecipeRepository = RecipeRepository(),
+    private val apiRepository: RecipeRepository,
     private val localRepository: LocalRecipeRepository
 ) : ViewModel() {
 
@@ -43,6 +43,7 @@ class RecipeDetailViewModel(
             }
         }
     }
+
     fun deleteUserRecipeById(id: Int, onSuccess: () -> Unit) {
         viewModelScope.launch {
             localRepository.deleteUserRecipeById(id)

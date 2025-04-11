@@ -1,13 +1,16 @@
 package com.nomnomapp.nomnom.data.repository
 
+import com.nomnomapp.nomnom.data.local.entity.CachedRecipeEntity
 import com.nomnomapp.nomnom.data.remote.*
 import com.nomnomapp.nomnom.data.remote.dto.MealDto
 import com.nomnomapp.nomnom.model.Recipe
+import com.nomnomapp.nomnom.data.local.dao.CachedRecipeDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class RecipeRepository {
+class RecipeRepository(private val dao: CachedRecipeDao) {
     private val api = ApiClient.mealApi
+
 
     suspend fun searchRecipes(query: String): List<Recipe> = withContext(Dispatchers.IO) {
         val response = api.searchMealsByName(query)
@@ -49,4 +52,38 @@ class RecipeRepository {
             ).filter { it.isNotBlank() }
         )
     }
+
+
+
+    suspend fun cacheRecipes(recipes: List<Recipe>) {
+        dao.clearAll()
+        recipes.take(10).forEach {
+            dao.insert(
+                CachedRecipeEntity(
+                    id = it.id,
+                    title = it.title,
+                    imageUrl = it.imageUrl,
+                    instructions = it.instructions,
+                    ingredients = it.ingredients.joinToString(","),
+                    category = it.category,
+                    area = it.area
+                )
+            )
+        }
+    }
+
+    suspend fun getCachedRecipes(): List<Recipe> {
+        return dao.getLastRecipes().map {
+            Recipe(
+                id = it.id,
+                title = it.title,
+                imageUrl = it.imageUrl,
+                instructions = it.instructions,
+                ingredients = it.ingredients.split(","),
+                category = it.category,
+                area = it.area
+            )
+        }
+    }
+
 }

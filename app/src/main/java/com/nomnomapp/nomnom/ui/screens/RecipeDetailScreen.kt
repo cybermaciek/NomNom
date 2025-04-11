@@ -38,6 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.data.local.DatabaseProvider
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
+import com.nomnomapp.nomnom.data.repository.RecipeRepository
 import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
@@ -55,10 +56,15 @@ fun RecipeDetailScreen(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val localRepo = LocalRecipeRepository(db.userRecipeDao())
-                return RecipeDetailViewModel(localRepository = localRepo) as T
+                val apiRepo = RecipeRepository(db.cachedRecipeDao())
+                return RecipeDetailViewModel(
+                    apiRepository = apiRepo,
+                    localRepository = localRepo
+                ) as T
             }
         }
     )
+
 
     val mealState by viewModel.mealState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
