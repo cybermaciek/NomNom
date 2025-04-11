@@ -100,7 +100,7 @@ fun CreateUserScreen(
                     Icon(
                         imageVector = Icons.Outlined.AddAPhoto,
                         contentDescription = "Add Photo Icon",
-                        tint = MaterialTheme.colorScheme.background,
+                        tint = Color.White,
                         modifier = Modifier.size(60.dp)
                     )
                 }
@@ -164,7 +164,7 @@ fun CreateUserScreen(
                     Icon(
                         imageVector = Icons.Outlined.PersonAdd,
                         contentDescription = "Create Profile icon",
-                        tint = MaterialTheme.colorScheme.background,
+                        tint = Color.White,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
