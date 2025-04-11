@@ -43,6 +43,12 @@ class RecipeDetailViewModel(
             }
         }
     }
+    fun deleteUserRecipeById(id: Int, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            localRepository.deleteUserRecipeById(id)
+            onSuccess()
+        }
+    }
 
     private fun UserRecipe.toRecipe(): Recipe {
         return Recipe(

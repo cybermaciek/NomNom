@@ -64,7 +64,12 @@ fun RecipeDetailScreen(
         meal = mealState,
         isLoading = isLoading,
         errorMessage = errorMessage,
-        onBackClick = { navController.popBackStack() }
+        onBackClick = { navController.popBackStack() },
+        onDelete = { recipeId ->
+            viewModel.deleteUserRecipeById(recipeId) {
+                navController.popBackStack()
+            }
+        }
     )
 }
 
@@ -73,8 +78,12 @@ fun MealDetailContent(
     meal: Recipe?,
     isLoading: Boolean,
     errorMessage: String?,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onDelete: (Int) -> Unit
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Scaffold { contentPadding ->
         Box(
             modifier = Modifier
@@ -221,9 +230,7 @@ fun MealDetailContent(
                             )
                         }
 
-                        if (meal?.id?.startsWith("user_") == true) {
-                            var menuExpanded by remember { mutableStateOf(false) }
-
+                        if (meal.id.startsWith("user_")) {
                             Box(//kolejny box który ma fillMaxWidth() i pozwoli to na ustawienie TopEnd jako align
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -244,21 +251,50 @@ fun MealDetailContent(
                                     DropdownMenu(
                                         expanded = menuExpanded,
                                         onDismissRequest = { menuExpanded = false },
-                                        modifier = Modifier.clip(RoundedCornerShape(20.dp)) // zaokrąglenie całego menu
+                                        modifier = Modifier.clip(RoundedCornerShape(20.dp))
                                     ) {
                                         DropdownMenuItem(
                                             text = { Text("Edit") },
-                                            onClick = { /* TODO: open edit screen */ }
+                                            onClick = {
+                                                menuExpanded = false
+                                                // TODO: open edit screen
+                                            }
                                         )
                                         DropdownMenuItem(
                                             text = { Text("Delete") },
-                                            onClick = { /* TODO: confirm and delete */ }
+                                            onClick = {
+                                                menuExpanded = false
+                                                showDeleteDialog = true
+                                            }
                                         )
                                     }
                                 }
                             }
                         }
+                    }
 
+                    if (showDeleteDialog && meal.id.startsWith("user_")) {
+                        AlertDialog(
+                            onDismissRequest = { showDeleteDialog = false },
+                            title = { Text("Delete Recipe") },
+                            text = { Text("Are you sure you want to delete this recipe?") },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    showDeleteDialog = false
+                                    val id = meal.id.removePrefix("user_").toIntOrNull()
+                                    if (id != null) {
+                                        onDelete(id)
+                                    }
+                                }) {
+                                    Text("Delete")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showDeleteDialog = false }) {
+                                    Text("Cancel")
+                                }
+                            }
+                        )
                     }
                 }
                 else -> Text(
@@ -270,13 +306,18 @@ fun MealDetailContent(
         }
     }
 }
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO, name = "Light")
+
+@Preview(
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO,
+    name = "Light"
+)
 @Composable
 fun MealDetailContentLightPreview() {
     NomNomTheme {
         MealDetailContent(
             meal = Recipe(
-                id = "52772",
+                id = "user_1", // ← lepiej użyć user_ dla przepisów użytkownika
                 title = "Spaghetti Carbonara",
                 imageUrl = "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
                 category = "Pasta",
@@ -285,18 +326,24 @@ fun MealDetailContentLightPreview() {
                 ingredients = listOf("Spaghetti", "Eggs", "Cheese", "Pancetta")
             ),
             isLoading = false,
-            errorMessage = null
-        ) {}
+            errorMessage = null,
+            onBackClick = {},
+            onDelete = {}
+        )
     }
 }
 
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
+@Preview(
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Theme"
+)
 @Composable
 fun MealDetailContentDarkPreview() {
     NomNomTheme {
         MealDetailContent(
             meal = Recipe(
-                id = "52772",
+                id = "user_1",
                 title = "Spaghetti Carbonara",
                 imageUrl = "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
                 category = "Pasta",
@@ -305,7 +352,9 @@ fun MealDetailContentDarkPreview() {
                 ingredients = listOf("Spaghetti", "Eggs", "Cheese", "Pancetta")
             ),
             isLoading = false,
-            errorMessage = null
-        ) {}
+            errorMessage = null,
+            onBackClick = {},
+            onDelete = {}
+        )
     }
 }

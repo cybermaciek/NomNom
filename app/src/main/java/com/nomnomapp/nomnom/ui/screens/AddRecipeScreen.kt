@@ -50,10 +50,10 @@ fun AddRecipeScreen(navController: NavController) {
 
     val viewModel = remember {
         AddRecipeViewModel(
-            recipeRepository = LocalRecipeRepository(db.userRecipeDao()),
-            shoppingItemDao = db.shoppingItemDao()
+            recipeRepository = LocalRecipeRepository(db.userRecipeDao())
         )
     }
+
 
     var title by remember { mutableStateOf("") }
     var instructions by remember { mutableStateOf("") }

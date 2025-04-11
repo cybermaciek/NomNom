@@ -52,6 +52,7 @@ import com.nomnomapp.nomnom.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 
 @Composable
 fun RecipeListScreen(
@@ -268,8 +269,15 @@ fun RecipeListScreenView(
                         },
                         onCardClick = { clicked ->
                             onNavigateToMealDetail(clicked.id)
+                        },
+                        onDeleteClick = { clickedRecipe ->
+                            val id = recipe.id.removePrefix("user_").toIntOrNull()
+                            if (id != null) {
+                                viewModel.deleteUserRecipeById(id) { /* opcjonalny onSuccess */ }
+                            }
                         }
                     )
+
                 }
             }
 
@@ -282,8 +290,12 @@ fun RecipeCard(
     recipe: Recipe,
     isFavorite: Boolean,
     onFavoriteClick: (Recipe) -> Unit,
-    onCardClick: (Recipe) -> Unit
+    onCardClick: (Recipe) -> Unit,
+    onDeleteClick: (Recipe) -> Unit
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.clickable { onCardClick(recipe) }) {
         Box(
             modifier = Modifier
@@ -297,58 +309,74 @@ fun RecipeCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize()
             )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
                 if (recipe.id.startsWith("user_")) {
-                    var menuExpanded by remember { mutableStateOf(false) }
-
                     Box {
                         IconButton(onClick = { menuExpanded = true }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Menu",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
+                            Icon(Icons.Default.MoreVert, contentDescription = "More")
                         }
-
                         DropdownMenu(
                             expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false },
-                            modifier = Modifier.clip(RoundedCornerShape(20.dp))
+                            onDismissRequest = { menuExpanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Edit") },
-                                onClick = { /* TODO: open edit */ }
-                            )
-                            DropdownMenuItem(
                                 text = { Text("Delete") },
-                                onClick = { /* TODO: confirm and delete */ }
+                                onClick = {
+                                    menuExpanded = false
+                                    showDeleteDialog = true
+                                }
                             )
                         }
                     }
                 } else {
-                    Spacer(modifier = Modifier.size(48.dp))
+                    Spacer(modifier = Modifier.width(48.dp))
                 }
-
-                IconButton(onClick = { onFavoriteClick(recipe) }) {
-                    AnimatedFavoriteIcon(
-                        isFavorite = isFavorite,
-                        onToggle = { onFavoriteClick(recipe) }
-                    )
-                }
+                AnimatedFavoriteIcon(
+                    isFavorite = isFavorite,
+                    onToggle = { onFavoriteClick(recipe) }
+                )
             }
         }
+
         Spacer(modifier = Modifier.height(8.dp))
-        Text(recipe.title, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onBackground)
+        Text(
+            recipe.title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
         HorizontalDivider(modifier = Modifier.padding(4.dp))
+
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text("Delete Recipe") },
+                text = { Text("Are you sure you want to delete this recipe?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDeleteDialog = false
+                        onDeleteClick(recipe)
+                    }) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
+
+
 
 @Composable
 fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {

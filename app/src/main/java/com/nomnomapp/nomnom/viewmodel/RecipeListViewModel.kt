@@ -42,6 +42,13 @@ class RecipeListViewModel(
             _recipes.value = api + local
         }
     }
+    fun deleteUserRecipeById(id: Int, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            localRepository.deleteUserRecipeById(id)
+            loadAllRecipes()
+            onSuccess()
+        }
+    }
 
     fun loadFilters() {
         viewModelScope.launch {

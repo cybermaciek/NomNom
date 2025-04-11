@@ -16,5 +16,11 @@ class LocalRecipeRepository(private val dao: UserRecipeDao) {
 
     suspend fun addRecipe(recipe: UserRecipe) = dao.insert(recipe)
 
-    suspend fun deleteRecipe(recipe: UserRecipe) = dao.delete(recipe)
+    suspend fun deleteUserRecipeById(id: Int) {
+        val recipe = dao.getRecipeById(id)
+        if (recipe != null) {
+            dao.delete(recipe)
+        }
+    }
+
 }

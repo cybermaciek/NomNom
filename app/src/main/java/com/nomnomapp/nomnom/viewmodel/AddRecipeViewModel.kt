@@ -1,5 +1,6 @@
 package com.nomnomapp.nomnom.viewmodel
 
+import android.R.id.input
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,41 +12,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 class AddRecipeViewModel(
-    private val recipeRepository: LocalRecipeRepository,
-    private val shoppingItemDao: ShoppingItemDao
+    private val recipeRepository: LocalRecipeRepository
 ) : ViewModel() {
-
-    private val _myRecipes = MutableStateFlow<List<UserRecipe>>(emptyList())
-    val myRecipes: StateFlow<List<UserRecipe>> = _myRecipes.asStateFlow()
-
-    init {
-        loadMyRecipes()
-    }
 
     fun addRecipe(recipe: UserRecipe, onSuccess: () -> Unit) {
         viewModelScope.launch {
             recipeRepository.addRecipe(recipe)
             Log.d("RECIPE_SAVE", "PRZEPIS ZAPISANY: $recipe")
             onSuccess()
-
         }
     }
 
-    fun deleteRecipe(recipe: UserRecipe) {
+    fun deleteUserRecipeById(id: Int, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            recipeRepository.deleteRecipe(recipe)
-            loadMyRecipes()
+            recipeRepository.deleteUserRecipeById(id)
+            onSuccess()
         }
     }
 
-    
-    private fun loadMyRecipes() {
-        viewModelScope.launch {
-            recipeRepository.getAllRecipes().collect { recipes ->
-                _myRecipes.value = recipes
-            }
-        }
-    }
 }
