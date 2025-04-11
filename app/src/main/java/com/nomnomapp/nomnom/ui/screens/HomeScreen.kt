@@ -37,12 +37,6 @@ fun HomeScreen(
     onNavigateToShoppingList: () -> Unit,
     context: Context = LocalContext.current
 ) {
-    val colorBackground = MaterialTheme.colorScheme.background
-    val colorOnBackground = MaterialTheme.colorScheme.onBackground
-    val colorOrange = MaterialTheme.colorScheme.primary
-    val colorGreen = MaterialTheme.colorScheme.secondary
-    val colorBlue = MaterialTheme.colorScheme.tertiary
-
     LaunchedEffect(Unit) {
         UserDataManager.loadUserData(context)
     }
@@ -66,7 +60,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .size(200.dp)
                         .clip(CircleShape)
-                        .border(5.dp, colorOrange, CircleShape)
+                        .border(5.dp, MaterialTheme.colorScheme.primary, CircleShape)
                 )
             } else {
                 Image(
@@ -76,20 +70,20 @@ fun HomeScreen(
                     modifier = Modifier
                         .size(200.dp)
                         .clip(CircleShape)
-                        .border(5.dp, colorOrange, CircleShape)
+                        .border(5.dp, MaterialTheme.colorScheme.primary, CircleShape)
                 )
             }
 
             Row(modifier = Modifier.padding(top = 10.dp)) {
                 Text(
                     buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = colorOnBackground)) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
                             append("Hello, ")
                         }
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Bold,
-                                color = colorOrange
+                                color = MaterialTheme.colorScheme.primary
                             )
                         ) {
                             append(
@@ -100,7 +94,7 @@ fun HomeScreen(
                                 }
                             )
                         }
-                        withStyle(style = SpanStyle(color = colorOnBackground)) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
                             append("!")
                         }
                     },
@@ -110,7 +104,7 @@ fun HomeScreen(
 
             Button(
                 onClick = { onNavigateToShoppingList() },
-                colors = ButtonDefaults.buttonColors(containerColor = colorGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(
@@ -128,14 +122,14 @@ fun HomeScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_shopping_cart),
                         contentDescription = "Shopping Cart Icon",
-                        tint = colorBackground,
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Shopping List",
-                        color = colorBackground,
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -144,7 +138,7 @@ fun HomeScreen(
 
             Button(
                 onClick = { onNavigateToRecipes() },
-                colors = ButtonDefaults.buttonColors(containerColor = colorBlue),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(top = 8.dp)
@@ -159,14 +153,14 @@ fun HomeScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_chefs_hat),
                         contentDescription = "Chef's Hat Icon",
-                        tint = colorBackground,
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Recipes",
-                        color = colorBackground,
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -175,7 +169,7 @@ fun HomeScreen(
 
             Button(
                 onClick = { onNavigateToSettings() },
-                colors = ButtonDefaults.buttonColors(containerColor = colorOnBackground),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .padding(top = 150.dp, bottom = 30.dp)
@@ -190,14 +184,14 @@ fun HomeScreen(
                     Icon(
                         imageVector = Icons.Outlined.Settings,
                         contentDescription = "Settings icon",
-                        tint = colorBackground,
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Settings",
-                        color = colorBackground,
+                        color = MaterialTheme.colorScheme.background,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
