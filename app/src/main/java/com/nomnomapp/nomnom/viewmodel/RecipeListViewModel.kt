@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
+import com.nomnomapp.nomnom.data.repository.FavoriteRepository
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.data.repository.RecipeRepository
 import com.nomnomapp.nomnom.model.Recipe
@@ -13,8 +14,12 @@ import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
     private val localRepository: LocalRecipeRepository,
-    private val apiRepository: RecipeRepository = RecipeRepository()
+    private val apiRepository: RecipeRepository = RecipeRepository(),
+    private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
+
+    private val _favoriteIds = MutableStateFlow<List<String>>(emptyList())
+    val favoriteIds: StateFlow<List<String>> = _favoriteIds
 
     private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
     val recipes: StateFlow<List<Recipe>> = _recipes
@@ -24,6 +29,27 @@ class RecipeListViewModel(
 
     private val _areas = MutableStateFlow<List<String>>(emptyList())
     val areas: StateFlow<List<String>> = _areas
+
+    init {
+        loadFavorites()
+    }
+    private fun loadFavorites() {
+        viewModelScope.launch {
+            favoriteRepository.getAll().collect { list ->
+                _favoriteIds.value = list.map { it.recipeId }
+            }
+        }
+    }
+
+    fun toggleFavorite(id: String) {
+        viewModelScope.launch {
+            if (favoriteRepository.isFavorite(id)) {
+                favoriteRepository.remove(id)
+            } else {
+                favoriteRepository.add(id)
+            }
+        }
+    }
 
     fun loadAllRecipes() {
         viewModelScope.launch {

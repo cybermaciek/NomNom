@@ -33,6 +33,7 @@ import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.data.local.DatabaseProvider
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
+import com.nomnomapp.nomnom.data.repository.FavoriteRepository
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.viewmodel.AddRecipeViewModel
 import com.nomnomapp.nomnom.viewmodel.RecipeListViewModel
@@ -54,8 +55,15 @@ fun AddRecipeScreen(
     val recipeListViewModel: RecipeListViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val localRepo = LocalRecipeRepository(DatabaseProvider.getDatabase(context).userRecipeDao())
-                return RecipeListViewModel(localRepo) as T
+                val db = DatabaseProvider.getDatabase(context)
+                val localRepo = LocalRecipeRepository(db.userRecipeDao())
+                val favoriteRepo = FavoriteRepository(db.favoriteDao())
+
+                return RecipeListViewModel(
+                    localRepository = localRepo,
+                    favoriteRepository = favoriteRepo
+                ) as T
+
             }
         }
     )
@@ -236,23 +244,64 @@ fun AddRecipeScreen(
                 )
             }
             item {
-                OutlinedDropdownField(
-                    label = "Category",
-                    options = categories,
-                    selectedOption = selectedCategory,
-                    onOptionSelected = { selectedCategory = it }
-                )
+                var expanded by remember { mutableStateOf(false) }
+                var selectedCategory by remember { mutableStateOf("") }
+
+                ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+                    OutlinedTextField(
+                        value = selectedCategory,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        categories.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category) },
+                                onClick = {
+                                    selectedCategory = category
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             item {
-                OutlinedDropdownField(
-                    label = "Cuisine (Area)",
-                    options = areas,
-                    selectedOption = selectedArea,
-                    onOptionSelected = { selectedArea = it }
-                )
-            }
+                var areaExpanded by remember { mutableStateOf(false) }
+                var selectedArea by remember { mutableStateOf("") }
 
+                ExposedDropdownMenuBox(expanded = areaExpanded, onExpandedChange = { areaExpanded = !areaExpanded }) {
+                    OutlinedTextField(
+                        value = selectedArea,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Cuisine (Area)") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(areaExpanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = areaExpanded,
+                        onDismissRequest = { areaExpanded = false }
+                    ) {
+                        areas.forEach { area ->
+                            DropdownMenuItem(
+                                text = { Text(area) },
+                                onClick = {
+                                    selectedArea = area
+                                    areaExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             item {
                 OutlinedTextField(
@@ -261,6 +310,24 @@ fun AddRecipeScreen(
                     label = { Text("Instructions") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(15.dp)
+                )
+            }
+
+            item {
+                Text("Category", fontWeight = FontWeight.SemiBold)
+                DropdownSelector(
+                    options = categories,
+                    selectedOption = selectedCategory,
+                    onOptionSelected = { selectedCategory = it }
+                )
+            }
+
+            item {
+                Text("Cuisine / Area", fontWeight = FontWeight.SemiBold)
+                DropdownSelector(
+                    options = areas,
+                    selectedOption = selectedArea,
+                    onOptionSelected = { selectedArea = it }
                 )
             }
 
@@ -290,46 +357,37 @@ fun AddRecipeScreen(
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OutlinedDropdownField(
-    label: String,
+fun DropdownSelector(
     options: List<String>,
     selectedOption: String,
     onOptionSelected: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        OutlinedTextField(
-            value = selectedOption,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            shape = RoundedCornerShape(15.dp),
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth()
-        )
+    Box(modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp)
+        ) {
+            Text(
+                text = if (selectedOption.isNotBlank()) selectedOption else "Select...",
+                modifier = Modifier.weight(1f)
+            )
+            Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+        }
 
-        ExposedDropdownMenu(
+        DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            options.forEach { selectionOption ->
+            options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(selectionOption) },
+                    text = { Text(option) },
                     onClick = {
-                        onOptionSelected(selectionOption)
+                        onOptionSelected(option)
                         expanded = false
                     }
                 )

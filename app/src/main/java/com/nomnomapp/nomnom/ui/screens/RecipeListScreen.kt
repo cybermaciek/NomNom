@@ -52,7 +52,10 @@ import com.nomnomapp.nomnom.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.nomnomapp.nomnom.data.local.DatabaseProvider
+import com.nomnomapp.nomnom.data.repository.FavoriteRepository
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
+import com.nomnomapp.nomnom.data.repository.RecipeRepository
 
 @Composable
 fun RecipeListScreen(
@@ -67,11 +70,14 @@ fun RecipeListScreen(
     val viewModel: RecipeListViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val localRepo = com.nomnomapp.nomnom.data.repository.LocalRecipeRepository(db.userRecipeDao())
-                return RecipeListViewModel(localRepository = localRepo) as T
+                val db = DatabaseProvider.getDatabase(context)
+                val localRepo = LocalRecipeRepository(db.userRecipeDao())
+                val favoriteRepo = FavoriteRepository(db.favoriteDao())
+                return RecipeListViewModel(localRepo, apiRepository = RecipeRepository(), favoriteRepository = favoriteRepo) as T
             }
         }
     )
+
 
     val recipes by viewModel.recipes.collectAsState()
 
@@ -102,8 +108,8 @@ fun RecipeListScreenView(
     onSettingsClick: () -> Unit
 ) {
     var search by remember { mutableStateOf("") }
-    val favoriteIds = remember { mutableStateListOf<String>() }
-    var showOnlyUserRecipes by remember { mutableStateOf(false) }
+    val favoriteIds by viewModel.favoriteIds.collectAsState()
+   var showOnlyUserRecipes by remember { mutableStateOf(false) }
 
 
     val categories by viewModel.categories.collectAsState()
@@ -260,12 +266,8 @@ fun RecipeListScreenView(
                     RecipeCard(
                         recipe = recipe,
                         isFavorite = favoriteIds.contains(recipe.id),
-                        onFavoriteClick = { clicked ->
-                            if (favoriteIds.contains(clicked.id)) {
-                                favoriteIds.remove(clicked.id)
-                            } else {
-                                favoriteIds.add(clicked.id)
-                            }
+                        onFavoriteClick = {
+                            viewModel.toggleFavorite(recipe.id)
                         },
                         onCardClick = { clicked ->
                             onNavigateToMealDetail(clicked.id)

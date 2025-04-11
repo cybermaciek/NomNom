@@ -2,6 +2,7 @@ package com.nomnomapp.nomnom.data.repository
 
 import com.nomnomapp.nomnom.data.local.dao.UserRecipeDao
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
+import com.nomnomapp.nomnom.model.Recipe
 import kotlinx.coroutines.flow.Flow
 
 class LocalRecipeRepository(private val dao: UserRecipeDao) {
@@ -24,5 +25,18 @@ class LocalRecipeRepository(private val dao: UserRecipeDao) {
     }
 
     suspend fun updateRecipe(recipe: UserRecipe) = dao.update(recipe)
+
+    suspend fun saveRecipe(recipe: Recipe) {
+        val userRecipe = UserRecipe(
+            id = 0,
+            title = recipe.title,
+            instructions = recipe.instructions,
+            ingredients = recipe.ingredients.joinToString(","),
+            imageUri = recipe.imageUrl,
+            category = recipe.category,
+            area = recipe.area
+        )
+        dao.insert(userRecipe)
+    }
 
 }
