@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -133,14 +134,14 @@ fun SettingsScreenView(
                     Icon(
                         imageVector = Icons.Outlined.Create,
                         contentDescription = "Edit",
-                        tint = MaterialTheme.colorScheme.background,
+                        tint = Color.White,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Change photo / name",
-                        color = MaterialTheme.colorScheme.background,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -169,14 +170,14 @@ fun SettingsScreenView(
                     Icon(
                         imageVector = Icons.Outlined.Share,
                         contentDescription = "Share",
-                        tint = MaterialTheme.colorScheme.background,
+                        tint = Color.White,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Share app",
-                        color = MaterialTheme.colorScheme.background,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )

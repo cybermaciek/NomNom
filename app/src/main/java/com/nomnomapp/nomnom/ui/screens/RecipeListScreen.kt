@@ -138,7 +138,7 @@ fun RecipeListScreenView(
             FloatingActionButton(
                 onClick = { navController.navigate(Routes.ADD_RECIPE.route) },
                 containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.background
+                contentColor = Color.White
             ) {
                 Icon(Icons.Outlined.Add, contentDescription = "Add Recipe")
             }
@@ -296,7 +296,7 @@ fun RecipeCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(200.dp)
                 .clip(RoundedCornerShape(16.dp))
         ) {
             Image(
@@ -347,7 +347,12 @@ fun RecipeCard(
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground
         )
-        HorizontalDivider(modifier = Modifier.padding(4.dp))
+        HorizontalDivider(
+            thickness = 2.dp,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier
+                .padding(top = 4.dp, bottom = 8.dp)
+        )
 
         if (showDeleteDialog) {
             AlertDialog(
@@ -438,7 +443,7 @@ fun AnimatedFavoriteIcon(
 
     val scale = remember { Animatable(1f) }
     val heartColor by animateColorAsState(
-        targetValue = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onBackground,
+        targetValue = if (isFavorite) Color.Red else Color.White,
         animationSpec = tween(durationMillis = 300)
     )
 

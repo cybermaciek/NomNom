@@ -70,6 +70,10 @@ fun AddRecipeScreen(
     var existingImagePath by remember { mutableStateOf<String?>(null) }
     var selectedCategory by remember { mutableStateOf("") }
     var selectedArea by remember { mutableStateOf("") }
+    var titleError by remember { mutableStateOf(false) }
+    var instructionsError by remember { mutableStateOf(false) }
+    var ingredientError by remember { mutableStateOf(false) }
+    var imageError by remember { mutableStateOf(false) }
 
     val categories by recipeListViewModel.categories.collectAsState()
     val areas by recipeListViewModel.areas.collectAsState()
@@ -93,7 +97,10 @@ fun AddRecipeScreen(
 
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri -> imageUri = uri }
+    ) { uri ->
+        imageUri = uri
+        imageError = uri == null
+    }
 
     val painter = rememberImagePainter(
         data = imageUri ?: "",
@@ -103,6 +110,15 @@ fun AddRecipeScreen(
             error(R.drawable.recipe_placeholder)
         }
     )
+
+    fun validateForm(): Boolean {
+        titleError = title.isBlank()
+        instructionsError = instructions.isBlank()
+        ingredientError = ingredientList.isEmpty() || ingredientList[0].isBlank()
+        imageError = imageUri == null && existingImagePath == null
+
+        return !titleError && !instructionsError && !ingredientError && !imageError
+    }
 
     fun saveImageToInternalStorage(context: Context, uri: Uri, overwritePath: String? = null): String? {
         return try {
@@ -128,35 +144,37 @@ fun AddRecipeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val savedImagePath = imageUri?.let {
-                        saveImageToInternalStorage(
-                            context = context,
-                            uri = it,
-                            overwritePath = existingImagePath
-                        )
-                    } ?: existingImagePath
+                    if (validateForm()) {
+                        val savedImagePath = imageUri?.let {
+                            saveImageToInternalStorage(
+                                context = context,
+                                uri = it,
+                                overwritePath = existingImagePath
+                            )
+                        } ?: existingImagePath
 
-                    val recipe = UserRecipe(
-                        id = editRecipeId ?: 0,
-                        title = title,
-                        category = selectedCategory,
-                        area = selectedArea,
-                        instructions = instructions,
-                        ingredients = ingredientList.joinToString(","),
-                        imageUri = savedImagePath
-                    )
-                    if (editRecipeId != null) {
-                        viewModel.updateRecipe(recipe) {
-                            navController.popBackStack()
-                        }
-                    } else {
-                        viewModel.addRecipe(recipe) {
-                            navController.popBackStack()
+                        val recipe = UserRecipe(
+                            id = editRecipeId ?: 0,
+                            title = title,
+                            category = selectedCategory,
+                            area = selectedArea,
+                            instructions = instructions,
+                            ingredients = ingredientList.joinToString(","),
+                            imageUri = savedImagePath
+                        )
+                        if (editRecipeId != null) {
+                            viewModel.updateRecipe(recipe) {
+                                navController.popBackStack()
+                            }
+                        } else {
+                            viewModel.addRecipe(recipe) {
+                                navController.popBackStack()
+                            }
                         }
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.background
+                contentColor = Color.White
             ) {
                 Icon(Icons.Outlined.Save, contentDescription = "Save")
             }
@@ -191,66 +209,89 @@ fun AddRecipeScreen(
             }
 
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .clickable { pickImageLauncher.launch("image/*") }
-                ) {
-                    Image(
-                        painter = painter,
-                        contentDescription = "Recipe Image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.matchParentSize()
-                    )
+                Column {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.3f)),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .height(250.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .clickable { pickImageLauncher.launch("image/*") }
                     ) {
-                        Column(
-                            modifier = Modifier.padding(top = 150.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Image(
+                            painter = painter,
+                            contentDescription = "Recipe Image",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.matchParentSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.AddAPhoto,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Text("Tap to add photo", color = Color.White)
+                            Column(
+                                modifier = Modifier.padding(top = 150.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.AddAPhoto,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Text("Tap to add photo", color = Color.White)
+                            }
                         }
+                    }
+                    if (imageError) {
+                        Text(
+                            text = "Photo is required",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
                     }
                 }
             }
 
             item {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(15.dp),
-                    singleLine = true
-                )
+                Column {
+                    OutlinedTextField(
+                        value = title,
+                        onValueChange = {
+                            title = it
+                            titleError = it.isBlank()
+                        },
+                        label = { Text("Title") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(15.dp),
+                        singleLine = true,
+                        isError = titleError
+                    )
+                    if (titleError) {
+                        Text(
+                            text = "Title is required",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
             }
 
             item {
                 OutlinedDropdownField(
-                    label = "Category",
+                    label = "Category (Optional)",
                     options = categories,
                     selectedOption = selectedCategory,
                     onOptionSelected = { selectedCategory = it }
                 )
             }
 
-
             item {
                 OutlinedDropdownField(
-                    label = "Cuisine (Area)",
+                    label = "Cuisine (Optional)",
                     options = areas,
                     selectedOption = selectedArea,
                     onOptionSelected = { selectedArea = it }
@@ -258,27 +299,53 @@ fun AddRecipeScreen(
             }
 
             item {
-                OutlinedTextField(
-                    value = instructions,
-                    onValueChange = { instructions = it },
-                    label = { Text("Instructions") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(15.dp)
-                )
+                Column {
+                    OutlinedTextField(
+                        value = instructions,
+                        onValueChange = {
+                            instructions = it
+                            instructionsError = it.isBlank()
+                        },
+                        label = { Text("Instructions") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(15.dp),
+                        isError = instructionsError
+                    )
+                    if (instructionsError) {
+                        Text(
+                            text = "Instructions are required",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
             }
 
             item {
                 Text("Ingredients", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                if (ingredientError) {
+                    Text(
+                        text = "At least one ingredient is required",
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
             }
 
             items(ingredientList.size) { index ->
                 OutlinedTextField(
                     value = ingredientList[index],
-                    onValueChange = { ingredientList[index] = it },
+                    onValueChange = {
+                        ingredientList[index] = it
+                        ingredientError = ingredientList.isEmpty() || ingredientList[0].isBlank()
+                    },
                     label = { Text("Ingredient ${index + 1}") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(15.dp),
-                    singleLine = true
+                    singleLine = true,
+                    isError = ingredientError && index == 0
                 )
             }
 
@@ -288,7 +355,7 @@ fun AddRecipeScreen(
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.tertiary
                     )
-                    ) {
+                ) {
                     Icon(Icons.Outlined.Add, contentDescription = null)
                     Spacer(Modifier.width(6.dp))
                     Text("Add Ingredient")
@@ -304,7 +371,8 @@ fun OutlinedDropdownField(
     label: String,
     options: List<String>,
     selectedOption: String,
-    onOptionSelected: (String) -> Unit
+    onOptionSelected: (String) -> Unit,
+    isError: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -323,7 +391,8 @@ fun OutlinedDropdownField(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp)
+            shape = RoundedCornerShape(15.dp),
+            isError = isError
         )
 
         ExposedDropdownMenu(

@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -122,14 +123,14 @@ fun HomeScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_shopping_cart),
                         contentDescription = "Shopping Cart Icon",
-                        tint = MaterialTheme.colorScheme.background,
+                        tint = Color.White,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Shopping List",
-                        color = MaterialTheme.colorScheme.background,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -153,14 +154,14 @@ fun HomeScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_chefs_hat),
                         contentDescription = "Chef's Hat Icon",
-                        tint = MaterialTheme.colorScheme.background,
+                        tint = Color.White,
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .size(36.dp)
                     )
                     Text(
                         text = "Recipes",
-                        color = MaterialTheme.colorScheme.background,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )

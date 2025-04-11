@@ -239,9 +239,10 @@ fun MealDetailContent(
                             ) {
                                 Button(
                                     onClick = { },
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.tertiary,
-                                        contentColor = MaterialTheme.colorScheme.background
+                                        contentColor = Color.White
                                     )
                                 ) {
                                     Text("Add all ingredients")
