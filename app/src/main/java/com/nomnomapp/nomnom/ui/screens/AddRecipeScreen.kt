@@ -155,8 +155,8 @@ fun AddRecipeScreen(
                         }
                     }
                 },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.background
             ) {
                 Icon(Icons.Outlined.Save, contentDescription = "Save")
             }
@@ -283,7 +283,12 @@ fun AddRecipeScreen(
             }
 
             item {
-                TextButton(onClick = { ingredientList.add("") }) {
+                TextButton(
+                    onClick = { ingredientList.add("") },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.tertiary
+                    )
+                    ) {
                     Icon(Icons.Outlined.Add, contentDescription = null)
                     Spacer(Modifier.width(6.dp))
                     Text("Add Ingredient")

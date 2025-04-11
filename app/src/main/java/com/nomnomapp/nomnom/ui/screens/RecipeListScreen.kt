@@ -137,8 +137,8 @@ fun RecipeListScreenView(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Routes.ADD_RECIPE.route) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.background
             ) {
                 Icon(Icons.Outlined.Add, contentDescription = "Add Recipe")
             }
@@ -274,10 +274,9 @@ fun RecipeListScreenView(
                             }
                         }
                     )
-
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-
         }
     }
 }

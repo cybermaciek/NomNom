@@ -215,17 +215,17 @@ fun MealDetailContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 4.dp)
-                                    .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                                    .background(MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(15.dp))
                                     .clickable(onClick = {})
                                     .padding(12.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(ingredient, color = Color.White)
+                                Text(ingredient, color = MaterialTheme.colorScheme.background)
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = "Add",
-                                    tint = MaterialTheme.colorScheme.onBackground
+                                    tint = MaterialTheme.colorScheme.background
                                 )
                             }
                         }
@@ -237,7 +237,13 @@ fun MealDetailContent(
                                     .padding(horizontal = 16.dp),
                                 horizontalArrangement = Arrangement.End
                             ) {
-                                FilledTonalButton(onClick = { }) {
+                                Button(
+                                    onClick = { },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.tertiary,
+                                        contentColor = MaterialTheme.colorScheme.background
+                                    )
+                                ) {
                                     Text("Add all ingredients")
                                 }
                             }

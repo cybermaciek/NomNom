@@ -257,7 +257,7 @@ fun ShoppingListScreenView(
                                         onLongPress = { showDeleteDialog = true }
                                     )
                                 }
-                                .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
+                                .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp)
                         ) {
                             Row(
@@ -328,7 +328,7 @@ fun ShoppingListScreenView(
                                         onLongPress = { showDeleteDialog = true }
                                     )
                                 }
-                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                                .background(MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(15.dp))
                                 .padding(12.dp)
                         ) {
                             Row(
