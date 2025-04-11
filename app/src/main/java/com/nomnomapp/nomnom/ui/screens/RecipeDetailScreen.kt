@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.data.local.DatabaseProvider
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.data.repository.RecipeRepository
@@ -147,7 +148,14 @@ fun MealDetailContent(
                                     .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
                             ) {
                                 Image(
-                                    painter = rememberImagePainter(meal.imageUrl),
+                                    painter = rememberImagePainter(
+                                        data = meal.imageUrl.takeIf { it.isNotEmpty() } ?: R.drawable.recipe_placeholder,
+                                        builder = {
+                                            crossfade(true)
+                                            placeholder(R.drawable.recipe_placeholder)
+                                            error(R.drawable.recipe_placeholder)
+                                        }
+                                    ),
                                     contentDescription = meal.title,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.matchParentSize()

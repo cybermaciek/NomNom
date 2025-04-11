@@ -138,7 +138,10 @@ fun RecipeListScreenView(
             FloatingActionButton(
                 onClick = { navController.navigate(Routes.ADD_RECIPE.route) },
                 containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = Color.White
+                contentColor = Color.White,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .size(64.dp)
             ) {
                 Icon(Icons.Outlined.Add, contentDescription = "Add Recipe")
             }
@@ -300,7 +303,14 @@ fun RecipeCard(
                 .clip(RoundedCornerShape(16.dp))
         ) {
             Image(
-                painter = rememberImagePainter(recipe.imageUrl),
+                painter = rememberImagePainter(
+                    data = recipe.imageUrl.takeIf { it.isNotEmpty() } ?: R.drawable.recipe_placeholder,
+                    builder = {
+                        crossfade(true)
+                        placeholder(R.drawable.recipe_placeholder)
+                        error(R.drawable.recipe_placeholder)
+                    }
+                ),
                 contentDescription = recipe.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize()
@@ -315,7 +325,7 @@ fun RecipeCard(
                 if (recipe.id.startsWith("user_")) {
                     Box {
                         IconButton(onClick = { menuExpanded = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More")
+                            Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color.White)
                         }
                         DropdownMenu(
                             expanded = menuExpanded,

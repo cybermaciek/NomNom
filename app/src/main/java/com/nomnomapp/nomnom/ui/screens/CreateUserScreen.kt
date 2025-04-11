@@ -23,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -170,7 +171,7 @@ fun CreateUserScreen(
                     )
                     Text(
                         text = "Create Profile",
-                        color = MaterialTheme.colorScheme.background,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )

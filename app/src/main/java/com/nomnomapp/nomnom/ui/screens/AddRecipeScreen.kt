@@ -73,7 +73,6 @@ fun AddRecipeScreen(
     var titleError by remember { mutableStateOf(false) }
     var instructionsError by remember { mutableStateOf(false) }
     var ingredientError by remember { mutableStateOf(false) }
-    var imageError by remember { mutableStateOf(false) }
 
     val categories by recipeListViewModel.categories.collectAsState()
     val areas by recipeListViewModel.areas.collectAsState()
@@ -85,8 +84,8 @@ fun AddRecipeScreen(
             recipe?.let {
                 title = it.title
                 instructions = it.instructions
-                imageUri = it.imageUri?.let { path -> Uri.parse(path) }
-                existingImagePath = it.imageUri
+                imageUri = it.imageUri?.takeIf { it.isNotEmpty() }?.let { path -> Uri.parse(path) }
+                existingImagePath = it.imageUri?.takeIf { it.isNotEmpty() }
                 selectedCategory = it.category
                 selectedArea = it.area
                 ingredientList.clear()
@@ -99,11 +98,10 @@ fun AddRecipeScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         imageUri = uri
-        imageError = uri == null
     }
 
     val painter = rememberImagePainter(
-        data = imageUri ?: "",
+        data = imageUri ?: existingImagePath ?: R.drawable.recipe_placeholder,
         builder = {
             crossfade(true)
             placeholder(R.drawable.recipe_placeholder)
@@ -115,9 +113,8 @@ fun AddRecipeScreen(
         titleError = title.isBlank()
         instructionsError = instructions.isBlank()
         ingredientError = ingredientList.isEmpty() || ingredientList[0].isBlank()
-        imageError = imageUri == null && existingImagePath == null
 
-        return !titleError && !instructionsError && !ingredientError && !imageError
+        return !titleError && !instructionsError && !ingredientError
     }
 
     fun saveImageToInternalStorage(context: Context, uri: Uri, overwritePath: String? = null): String? {
@@ -132,10 +129,10 @@ fun AddRecipeScreen(
             inputStream.copyTo(outputStream)
             inputStream.close()
             outputStream.close()
-            Log.d("IMG_SAVE", "Zapisano zdjecie do: ${file.absolutePath}")
+            Log.d("IMG_SAVE", "Saved image to: ${file.absolutePath}")
             file.absolutePath
         } catch (e: Exception) {
-            Log.e("IMG_SAVE", "Blad zapisu zdjecia", e)
+            Log.e("IMG_SAVE", "Error saving image", e)
             null
         }
     }
@@ -151,7 +148,7 @@ fun AddRecipeScreen(
                                 uri = it,
                                 overwritePath = existingImagePath
                             )
-                        } ?: existingImagePath
+                        } ?: existingImagePath ?: ""
 
                         val recipe = UserRecipe(
                             id = editRecipeId ?: 0,
@@ -211,46 +208,45 @@ fun AddRecipeScreen(
             item {
                 Column {
                     Box(
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(250.dp)
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .clickable { pickImageLauncher.launch("image/*") }
                     ) {
-                        Image(
-                            painter = painter,
-                            contentDescription = "Recipe Image",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.matchParentSize()
-                        )
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.3f)),
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .clickable { pickImageLauncher.launch("image/*") },
                             contentAlignment = Alignment.Center
                         ) {
-                            Column(
-                                modifier = Modifier.padding(top = 150.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                            Image(
+                                painter = painter,
+                                contentDescription = "Recipe Image",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.matchParentSize()
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.3f)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.AddAPhoto,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                                Text("Tap to add photo", color = Color.White)
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.AddAPhoto,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(48.dp)
+                                    )
+                                    Text("Tap to add photo (optional)", color = Color.White)
+                                }
                             }
                         }
-                    }
-                    if (imageError) {
-                        Text(
-                            text = "Photo is required",
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
                     }
                 }
             }
