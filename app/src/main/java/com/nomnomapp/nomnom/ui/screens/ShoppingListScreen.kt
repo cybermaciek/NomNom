@@ -161,16 +161,18 @@ fun ShoppingListScreenView(
                             innerTextField()
                         }
 
-                        Icon(
-                            imageVector = if (searchQuery.isNotBlank()) Icons.Default.Add else Icons.Outlined.Search,
-                            contentDescription = if (searchQuery.isNotBlank()) "Add" else "Search",
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier
-                                .clickable(enabled = searchQuery.isNotBlank()) {
-                                    onAddItem(searchQuery)
-                                    onSearchQueryChanged("")
-                                }
-                        )
+                        if (searchQuery.isNotBlank()) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add",
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .clickable {
+                                        onAddItem(searchQuery)
+                                        onSearchQueryChanged("")
+                                    }
+                            )
+                        }
                     }
                 },
                 textStyle = LocalTextStyle.current.copy(
