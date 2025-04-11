@@ -236,62 +236,23 @@ fun AddRecipeScreen(
                 )
             }
             item {
-                var expanded by remember { mutableStateOf(false) }
-
-                ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
-                    OutlinedTextField(
-                        value = selectedCategory,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Category") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        categories.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(category) },
-                                onClick = {
-                                    selectedCategory = category
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+                OutlinedDropdownField(
+                    label = "Category",
+                    options = categories,
+                    selectedOption = selectedCategory,
+                    onOptionSelected = { selectedCategory = it }
+                )
             }
 
             item {
-                var areaExpanded by remember { mutableStateOf(false) }
-
-                ExposedDropdownMenuBox(expanded = areaExpanded, onExpandedChange = { areaExpanded = !areaExpanded }) {
-                    OutlinedTextField(
-                        value = selectedArea,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Cuisine (Area)") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(areaExpanded) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = areaExpanded,
-                        onDismissRequest = { areaExpanded = false }
-                    ) {
-                        areas.forEach { area ->
-                            DropdownMenuItem(
-                                text = { Text(area) },
-                                onClick = {
-                                    selectedArea = area
-                                    areaExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+                OutlinedDropdownField(
+                    label = "Cuisine (Area)",
+                    options = areas,
+                    selectedOption = selectedArea,
+                    onOptionSelected = { selectedArea = it }
+                )
             }
+
 
             item {
                 OutlinedTextField(
@@ -329,37 +290,46 @@ fun AddRecipeScreen(
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownSelector(
+fun OutlinedDropdownField(
+    label: String,
     options: List<String>,
     selectedOption: String,
     onOptionSelected: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        OutlinedButton(
-            onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp)
-        ) {
-            Text(
-                text = if (selectedOption.isNotBlank()) selectedOption else "Select...",
-                modifier = Modifier.weight(1f)
-            )
-            Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
-        }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = selectedOption,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            shape = RoundedCornerShape(15.dp),
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
 
-        DropdownMenu(
+        ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
         ) {
-            options.forEach { option ->
+            options.forEach { selectionOption ->
                 DropdownMenuItem(
-                    text = { Text(option) },
+                    text = { Text(selectionOption) },
                     onClick = {
-                        onOptionSelected(option)
+                        onOptionSelected(selectionOption)
                         expanded = false
                     }
                 )
