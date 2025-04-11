@@ -1,5 +1,10 @@
+
+
+
 package com.nomnomapp.nomnom.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,17 +34,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.data.local.DatabaseProvider
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
 import com.nomnomapp.nomnom.model.Recipe
+import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
-import com.nomnomapp.nomnom.ui.navigation.Routes
-import androidx.navigation.compose.rememberNavController
-
-
-
 
 @Composable
 fun RecipeDetailScreen(
@@ -88,8 +91,27 @@ fun MealDetailContent(
     onDelete: (Int) -> Unit,
     navController: NavController
 ) {
+    val context = LocalContext.current
     var showDeleteDialog by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
+
+    fun shareRecipe(recipe: Recipe) {
+        val shareText = buildString {
+            append("📖 ${recipe.title}\n")
+            append("🍝 Category: ${recipe.category}\n")
+            append("🌍 Cuisine: ${recipe.area}\n\n")
+            append("🧾 Ingredients:\n")
+            recipe.ingredients.forEach { append("- $it\n") }
+            append("\n📋 Instructions:\n${recipe.instructions}")
+        }
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, recipe.title)
+            putExtra(Intent.EXTRA_TEXT, shareText)
+        }
+        context.startActivity(Intent.createChooser(intent, "Share recipe via"))
+    }
 
     Scaffold { contentPadding ->
         Box(
@@ -116,12 +138,7 @@ fun MealDetailContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(400.dp)
-                                    .clip(
-                                        RoundedCornerShape(
-                                            bottomStart = 24.dp,
-                                            bottomEnd = 24.dp
-                                        )
-                                    )
+                                    .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
                             ) {
                                 Image(
                                     painter = rememberImagePainter(meal.imageUrl),
@@ -221,6 +238,7 @@ fun MealDetailContent(
                             Spacer(modifier = Modifier.height(24.dp))
                         }
                     }
+
                     Row(
                         modifier = Modifier
                             .padding(16.dp)
@@ -242,24 +260,29 @@ fun MealDetailContent(
                             )
                         }
 
-                        if (meal.id.startsWith("user_")) {
-                            Box(//kolejny box który ma fillMaxWidth() i pozwoli to na ustawienie TopEnd jako align
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(
+                                onClick = { shareRecipe(meal) },
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .size(48.dp)
+                                    .clip(RoundedCornerShape(50))
+                                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.0f))
                             ) {
-                                Box(
-                                    modifier = Modifier.align(Alignment.TopEnd)
-                                ) {
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = "Share",
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+
+                            if (meal.id.startsWith("user_")) {
+                                Box {
                                     IconButton(
                                         onClick = { menuExpanded = true },
                                         modifier = Modifier
                                             .size(48.dp)
                                             .clip(RoundedCornerShape(50))
-                                            .background(
-                                                MaterialTheme.colorScheme.background.copy(
-                                                    alpha = 0.0f
-                                                )
-                                            )
+                                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.0f))
                                     ) {
                                         Icon(Icons.Default.MoreVert, contentDescription = "Menu")
                                     }
@@ -325,6 +348,8 @@ fun MealDetailContent(
         }
     }
 }
+
+
 
 @Preview(
     showBackground = true,
