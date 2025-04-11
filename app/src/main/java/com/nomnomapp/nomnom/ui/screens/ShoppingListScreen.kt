@@ -21,15 +21,17 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,9 +67,9 @@ fun ShoppingListScreen(
         onSearchQueryChanged = { viewModel.updateSearchQuery(it) },
         onAddItem = { viewModel.addOrRemoveItem(it) },
         onRemoveItem = { viewModel.moveToRecent(it) },
-        onDeleteItem = { viewModel.deleteItem(it) },
         onBackClick = { navController?.popBackStack() },
-        onSettingsClick = { navController?.navigate(Routes.SETTINGS.route) }
+        onSettingsClick = { navController?.navigate(Routes.SETTINGS.route) },
+        onDeleteItem = { viewModel.deleteItem(it) }
     )
 }
 
@@ -79,9 +81,9 @@ fun ShoppingListScreenView(
     onSearchQueryChanged: (String) -> Unit,
     onAddItem: (String) -> Unit,
     onRemoveItem: (String) -> Unit,
-    onDeleteItem: (String) -> Unit,
     onBackClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onDeleteItem: (String) -> Unit
 ) {
     Scaffold { contentPadding ->
         Column(
@@ -145,7 +147,10 @@ fun ShoppingListScreenView(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.LightGray.copy(alpha = 0.1f), shape = RoundedCornerShape(12.dp))
+                            .background(
+                                Color.LightGray.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -195,22 +200,53 @@ fun ShoppingListScreenView(
                 Spacer(modifier = Modifier.height(8.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     toBuyItems.forEach { item ->
-                        Row(
+                        var showDeleteDialog by remember { mutableStateOf(false) }
+
+                        if (showDeleteDialog) {
+                            AlertDialog(
+                                onDismissRequest = { showDeleteDialog = false },
+                                title = { Text("Delete item") },
+                                text = { Text("Are you sure you want to delete \"$item\"?") },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            onDeleteItem(item)
+                                            showDeleteDialog = false
+                                        }
+                                    ) {
+                                        Text("Delete")
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(
+                                        onClick = { showDeleteDialog = false }
+                                    ) {
+                                        Text("Cancel")
+                                    }
+                                }
+                            )
+                        }
+
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .pointerInput(Unit) {
+                                .pointerInput(item) {
                                     detectTapGestures(
                                         onTap = { onRemoveItem(item) },
-                                        onLongPress = { onDeleteItem(item) }
+                                        onLongPress = { showDeleteDialog = true }
                                     )
                                 }
                                 .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(12.dp)
                         ) {
-                            Text(item, color = Color.White)
-                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(item, color = Color.White)
+                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
+                            }
                         }
                     }
                 }
@@ -219,26 +255,62 @@ fun ShoppingListScreenView(
             Spacer(modifier = Modifier.height(24.dp))
 
             if (recentItems.isNotEmpty()) {
-                Text("Shopping history", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+                Text(
+                    "Shopping history",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     recentItems.forEach { item ->
-                        Row(
+                        var showDeleteDialog by remember { mutableStateOf(false) }
+
+                        if (showDeleteDialog) {
+                            AlertDialog(
+                                onDismissRequest = { showDeleteDialog = false },
+                                title = { Text("Delete item") },
+                                text = { Text("Are you sure you want to delete \"$item\"?") },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            onDeleteItem(item)
+                                            showDeleteDialog = false
+                                        }
+                                    ) { Text("Delete") }
+                                },
+                                dismissButton = {
+                                    TextButton(
+                                        onClick = { showDeleteDialog = false }
+                                    ) { Text("Cancel") }
+                                }
+                            )
+                        }
+
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .pointerInput(Unit) {
+                                .pointerInput(item) {
                                     detectTapGestures(
                                         onTap = { onAddItem(item) },
-                                        onLongPress = { onDeleteItem(item) }
+                                        onLongPress = { showDeleteDialog = true }
                                     )
                                 }
                                 .background(Color.Gray, shape = RoundedCornerShape(15.dp))
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(12.dp)
                         ) {
-                            Text(item, color = Color.White)
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(item, color = Color.White)
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add",
+                                    tint = Color.White
+                                )
+                            }
                         }
                     }
                 }
@@ -258,9 +330,9 @@ fun ShoppingListScreenPreview() {
             onSearchQueryChanged = {},
             onAddItem = {},
             onRemoveItem = {},
-            onDeleteItem = {},
             onBackClick = {},
-            onSettingsClick = {}
+            onSettingsClick = {},
+            onDeleteItem = {}
         )
     }
 }
