@@ -13,13 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -91,225 +92,247 @@ fun ShoppingListScreenView(
                 .padding(contentPadding)
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background)
-                .padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(MaterialTheme.colorScheme.background)
-                        .clickable { onBackClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onBackground,
-                    )
-                }
-
-                Text(
-                    text = "Shopping List",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(MaterialTheme.colorScheme.background)
-                        .clickable { onSettingsClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = "Settings",
-                        tint = MaterialTheme.colorScheme.onBackground,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            BasicTextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChanged,
-                singleLine = true,
-                maxLines = 1,
-                decorationBox = { innerTextField ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Color.LightGray.copy(alpha = 0.1f),
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            if (searchQuery.isBlank()) {
-                                Text(
-                                    text = "Add...",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    maxLines = 1,
-                                )
-                            }
-                            innerTextField()
-                        }
-
-                        if (searchQuery.isNotBlank()) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Add",
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier
-                                    .clickable {
-                                        onAddItem(searchQuery)
-                                        onSearchQueryChanged("")
-                                    }
-                            )
-                        }
-                    }
-                },
-                textStyle = LocalTextStyle.current.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp
-                ),
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            )
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.background)
+                            .clickable { onBackClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = "Shopping List",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
 
-            if (toBuyItems.isNotEmpty()) {
-                Text("To buy", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
-                Spacer(modifier = Modifier.height(8.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    toBuyItems.forEach { item ->
-                        var showDeleteDialog by remember { mutableStateOf(false) }
-
-                        if (showDeleteDialog) {
-                            AlertDialog(
-                                onDismissRequest = { showDeleteDialog = false },
-                                title = { Text("Delete item") },
-                                text = { Text("Are you sure you want to delete \"$item\"?") },
-                                confirmButton = {
-                                    TextButton(
-                                        onClick = {
-                                            onDeleteItem(item)
-                                            showDeleteDialog = false
-                                        }
-                                    ) {
-                                        Text("Delete")
-                                    }
-                                },
-                                dismissButton = {
-                                    TextButton(
-                                        onClick = { showDeleteDialog = false }
-                                    ) {
-                                        Text("Cancel")
-                                    }
-                                }
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .pointerInput(item) {
-                                    detectTapGestures(
-                                        onTap = { onRemoveItem(item) },
-                                        onLongPress = { showDeleteDialog = true }
-                                    )
-                                }
-                                .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
-                                .padding(12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(item, color = Color.White)
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove", tint = Color.White)
-                            }
-                        }
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.background)
+                            .clickable { onSettingsClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "Settings",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            if (recentItems.isNotEmpty()) {
-                Text(
-                    "Shopping history",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    recentItems.forEach { item ->
-                        var showDeleteDialog by remember { mutableStateOf(false) }
-
-                        if (showDeleteDialog) {
-                            AlertDialog(
-                                onDismissRequest = { showDeleteDialog = false },
-                                title = { Text("Delete item") },
-                                text = { Text("Are you sure you want to delete \"$item\"?") },
-                                confirmButton = {
-                                    TextButton(
-                                        onClick = {
-                                            onDeleteItem(item)
-                                            showDeleteDialog = false
-                                        }
-                                    ) { Text("Delete") }
-                                },
-                                dismissButton = {
-                                    TextButton(
-                                        onClick = { showDeleteDialog = false }
-                                    ) { Text("Cancel") }
-                                }
-                            )
-                        }
-
-                        Box(
+                BasicTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChanged,
+                    singleLine = true,
+                    maxLines = 1,
+                    decorationBox = { innerTextField ->
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .pointerInput(item) {
-                                    detectTapGestures(
-                                        onTap = { onAddItem(item) },
-                                        onLongPress = { showDeleteDialog = true }
+                                .background(
+                                    Color.LightGray.copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = 8.dp),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                if (searchQuery.isBlank()) {
+                                    Text(
+                                        text = "Add...",
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        maxLines = 1,
                                     )
                                 }
-                                .background(Color.Gray, shape = RoundedCornerShape(15.dp))
-                                .padding(12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(item, color = Color.White)
+                                innerTextField()
+                            }
+
+                            if (searchQuery.isNotBlank()) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = "Add",
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier
+                                        .clickable {
+                                            onAddItem(searchQuery)
+                                            onSearchQueryChanged("")
+                                        }
                                 )
+                            }
+                        }
+                    },
+                    textStyle = LocalTextStyle.current.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 14.sp
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .weight(1f)
+            ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                if (toBuyItems.isNotEmpty()) {
+                    Text(
+                        "To buy",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        toBuyItems.forEach { item ->
+                            var showDeleteDialog by remember { mutableStateOf(false) }
+
+                            if (showDeleteDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { showDeleteDialog = false },
+                                    title = { Text("Delete item") },
+                                    text = { Text("Are you sure you want to delete \"$item\"?") },
+                                    confirmButton = {
+                                        TextButton(
+                                            onClick = {
+                                                onDeleteItem(item)
+                                                showDeleteDialog = false
+                                            }
+                                        ) {
+                                            Text("Delete")
+                                        }
+                                    },
+                                    dismissButton = {
+                                        TextButton(
+                                            onClick = { showDeleteDialog = false }
+                                        ) {
+                                            Text("Cancel")
+                                        }
+                                    }
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .pointerInput(item) {
+                                        detectTapGestures(
+                                            onTap = { onRemoveItem(item) },
+                                            onLongPress = { showDeleteDialog = true }
+                                        )
+                                    }
+                                    .background(Color(0xFF00796B), shape = RoundedCornerShape(15.dp))
+                                    .padding(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(item, color = Color.White)
+                                    Icon(
+                                        imageVector = Icons.Filled.Close,
+                                        contentDescription = "Remove",
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                if (recentItems.isNotEmpty()) {
+                    Text(
+                        "Shopping history",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        recentItems.forEach { item ->
+                            var showDeleteDialog by remember { mutableStateOf(false) }
+
+                            if (showDeleteDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { showDeleteDialog = false },
+                                    title = { Text("Delete item") },
+                                    text = { Text("Are you sure you want to delete \"$item\"?") },
+                                    confirmButton = {
+                                        TextButton(
+                                            onClick = {
+                                                onDeleteItem(item)
+                                                showDeleteDialog = false
+                                            }
+                                        ) { Text("Delete") }
+                                    },
+                                    dismissButton = {
+                                        TextButton(
+                                            onClick = { showDeleteDialog = false }
+                                        ) { Text("Cancel") }
+                                    }
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .pointerInput(item) {
+                                        detectTapGestures(
+                                            onTap = { onAddItem(item) },
+                                            onLongPress = { showDeleteDialog = true }
+                                        )
+                                    }
+                                    .background(Color.Gray, shape = RoundedCornerShape(15.dp))
+                                    .padding(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(item, color = Color.White)
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add",
+                                        tint = Color.White
+                                    )
+                                }
                             }
                         }
                     }
