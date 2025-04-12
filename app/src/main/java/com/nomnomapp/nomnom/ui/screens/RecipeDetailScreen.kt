@@ -3,6 +3,7 @@
 
 package com.nomnomapp.nomnom.ui.screens
 
+import android.R.attr.duration
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -44,6 +45,9 @@ import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.RecipeDetailViewModel
+import com.nomnomapp.nomnom.viewmodel.ShoppingListViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun RecipeDetailScreen(
@@ -52,6 +56,7 @@ fun RecipeDetailScreen(
 ) {
     val context = LocalContext.current
     val db = remember { DatabaseProvider.getDatabase(context) }
+    val shoppingListViewModel: ShoppingListViewModel = remember { ShoppingListViewModel(context) }
 
     val viewModel: RecipeDetailViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
@@ -85,7 +90,8 @@ fun RecipeDetailScreen(
                 navController.popBackStack()
             }
         },
-        navController = navController
+        navController = navController,
+        shoppingListViewModel = shoppingListViewModel
     )
 }
 
@@ -96,11 +102,14 @@ fun MealDetailContent(
     errorMessage: String?,
     onBackClick: () -> Unit,
     onDelete: (Int) -> Unit,
-    navController: NavController
+    navController: NavController,
+    shoppingListViewModel: ShoppingListViewModel
 ) {
     val context = LocalContext.current
     var showDeleteDialog by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     fun shareRecipe(recipe: Recipe) {
         val shareText = buildString {
@@ -120,7 +129,9 @@ fun MealDetailContent(
         context.startActivity(Intent.createChooser(intent, "Share recipe via"))
     }
 
-    Scaffold { contentPadding ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { contentPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -224,7 +235,15 @@ fun MealDetailContent(
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 4.dp)
                                     .background(MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(15.dp))
-                                    .clickable(onClick = {})
+                                    .clickable(onClick = {
+                                        shoppingListViewModel.addOrRemoveItem(ingredient)
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                message = "Added $ingredient to shopping list",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    })
                                     .padding(12.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
@@ -246,7 +265,17 @@ fun MealDetailContent(
                                 horizontalArrangement = Arrangement.End
                             ) {
                                 Button(
-                                    onClick = { },
+                                    onClick = {
+                                        meal?.ingredients?.forEach { ingredient ->
+                                            shoppingListViewModel.addOrRemoveItem(ingredient)
+                                        }
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                message = "Added all ingredients to shopping list",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    },
                                     shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.tertiary,
@@ -367,63 +396,5 @@ fun MealDetailContent(
                 )
             }
         }
-    }
-}
-
-
-
-@Preview(
-    showBackground = true,
-    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO,
-    name = "Light"
-)
-@Composable
-fun MealDetailContentLightPreview() {
-    NomNomTheme {
-        val navController = rememberNavController()
-        MealDetailContent(
-            meal = Recipe(
-                id = "user_1",
-                title = "Spaghetti Carbonara",
-                imageUrl = "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
-                category = "Pasta",
-                area = "Italian",
-                instructions = "1. Cook pasta\n2. Mix eggs and cheese\n3. Add pancetta\n4. Combine everything",
-                ingredients = listOf("Spaghetti", "Eggs", "Cheese", "Pancetta")
-            ),
-            isLoading = false,
-            errorMessage = null,
-            onBackClick = {},
-            onDelete = {},
-            navController = navController
-        )
-    }
-}
-
-@Preview(
-    showBackground = true,
-    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
-    name = "Dark Theme"
-)
-@Composable
-fun MealDetailContentDarkPreview() {
-    NomNomTheme {
-        val navController = rememberNavController()
-        MealDetailContent(
-            meal = Recipe(
-                id = "user_1",
-                title = "Spaghetti Carbonara",
-                imageUrl = "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
-                category = "Pasta",
-                area = "Italian",
-                instructions = "1. Cook pasta\n2. Mix eggs and cheese\n3. Add pancetta\n4. Combine everything",
-                ingredients = listOf("Spaghetti", "Eggs", "Cheese", "Pancetta")
-            ),
-            isLoading = false,
-            errorMessage = null,
-            onBackClick = {},
-            onDelete = {},
-            navController = navController
-        )
     }
 }
