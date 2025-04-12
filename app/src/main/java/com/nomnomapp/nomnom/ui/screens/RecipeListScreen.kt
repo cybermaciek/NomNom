@@ -302,19 +302,29 @@ fun RecipeCard(
                 .height(200.dp)
                 .clip(RoundedCornerShape(16.dp))
         ) {
-            Image(
-                painter = rememberImagePainter(
-                    data = recipe.imageUrl.takeIf { it.isNotEmpty() } ?: R.drawable.recipe_placeholder,
-                    builder = {
-                        crossfade(true)
-                        placeholder(R.drawable.recipe_placeholder)
-                        error(R.drawable.recipe_placeholder)
-                    }
-                ),
-                contentDescription = recipe.title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
+            val imageData = if (recipe.id.startsWith("user_") && recipe.imageUrl.isNullOrEmpty()) {
+                R.drawable.recipe_placeholder
+            } else {
+                recipe.imageUrl.takeIf { it?.isNotEmpty() == true } ?: ""
+            }
+
+            if (imageData.toString().isNotEmpty()) {
+                Image(
+                    painter = rememberImagePainter(
+                        data = imageData,
+                        builder = {
+                            crossfade(true)
+                            if (recipe.id.startsWith("user_") && imageData == R.drawable.recipe_placeholder) {
+                                placeholder(R.drawable.recipe_placeholder)
+                                error(R.drawable.recipe_placeholder)
+                            }
+                        }
+                    ),
+                    contentDescription = recipe.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
 
             Row(
                 modifier = Modifier

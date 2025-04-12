@@ -160,7 +160,7 @@ fun MealDetailContent(
                             ) {
                                 Image(
                                     painter = rememberImagePainter(
-                                        data = meal.imageUrl.takeIf { it.isNotEmpty() } ?: R.drawable.recipe_placeholder,
+                                        data = if (!meal.imageUrl.isNullOrEmpty()) meal.imageUrl else R.drawable.recipe_placeholder,
                                         builder = {
                                             crossfade(true)
                                             placeholder(R.drawable.recipe_placeholder)

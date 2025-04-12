@@ -62,7 +62,7 @@ class RecipeRepository(private val dao: CachedRecipeDao) {
                 CachedRecipeEntity(
                     id = it.id,
                     title = it.title,
-                    imageUrl = it.imageUrl,
+                    imageUrl = it.imageUrl ?: "",
                     instructions = it.instructions,
                     ingredients = it.ingredients.joinToString(","),
                     category = it.category,

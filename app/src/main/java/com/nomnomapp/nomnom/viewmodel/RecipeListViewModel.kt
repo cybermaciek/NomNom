@@ -112,7 +112,7 @@ class RecipeListViewModel(
         return Recipe(
             id = "user_${this.id}",
             title = this.title,
-            imageUrl = this.imageUri ?: "",
+            imageUrl = this.imageUri.takeIf { !it.isNullOrEmpty() },
             instructions = this.instructions,
             ingredients = this.ingredients.split(",").map { it.trim() },
             category = this.category,
