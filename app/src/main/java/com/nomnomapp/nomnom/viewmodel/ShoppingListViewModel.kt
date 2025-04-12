@@ -39,8 +39,11 @@ class ShoppingListViewModel(context: Context) : ViewModel() {
 
     fun moveToRecent(name: String) {
         viewModelScope.launch {
-            shoppingItemDao.searchItems(name).firstOrNull()?.let { item ->
-                shoppingItemDao.update(item.copy(
+            val existingInCart = shoppingItemDao.searchItems(name)
+                .firstOrNull { it.isInCart }
+
+            if (existingInCart != null) {
+                shoppingItemDao.update(existingInCart.copy(
                     isInCart = false,
                     timestamp = System.currentTimeMillis()
                 ))
@@ -53,6 +56,12 @@ class ShoppingListViewModel(context: Context) : ViewModel() {
             shoppingItemDao.searchItems(name).firstOrNull()?.let { item ->
                 shoppingItemDao.delete(item)
             }
+        }
+    }
+
+    fun clearRecentItems() {
+        viewModelScope.launch {
+            shoppingItemDao.clearRecentItems()
         }
     }
 }

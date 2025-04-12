@@ -28,4 +28,7 @@ interface ShoppingItemDao {
 
     @Query("SELECT * FROM shopping_items WHERE name LIKE :query")
     suspend fun searchItems(query: String): List<ShoppingItem>
+
+    @Query("DELETE FROM shopping_items WHERE isInCart = 0")
+    suspend fun clearRecentItems()
 }

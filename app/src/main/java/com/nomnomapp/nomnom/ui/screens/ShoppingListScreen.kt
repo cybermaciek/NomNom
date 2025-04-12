@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,7 +72,8 @@ fun ShoppingListScreen(
         onRemoveItem = { viewModel.moveToRecent(it) },
         onBackClick = { navController?.popBackStack() },
         onSettingsClick = { navController?.navigate(Routes.SETTINGS.route) },
-        onDeleteItem = { viewModel.deleteItem(it) }
+        onDeleteItem = { viewModel.deleteItem(it) },
+        onClearRecentItems = { viewModel.clearRecentItems() }
     )
 }
 
@@ -85,7 +87,8 @@ fun ShoppingListScreenView(
     onRemoveItem: (String) -> Unit,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onDeleteItem: (String) -> Unit
+    onDeleteItem: (String) -> Unit,
+    onClearRecentItems: () -> Unit
 ) {
     Scaffold { contentPadding ->
         Column(
@@ -285,15 +288,31 @@ fun ShoppingListScreenView(
 
                 if (recentItems.isNotEmpty()) {
                     item {
-                        Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 "Shopping history",
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 16.sp,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                "Clear all history",
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .clickable { onClearRecentItems() }
+                                    .padding(8.dp)
+                            )
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
 
                     items(recentItems) { item ->
@@ -350,6 +369,17 @@ fun ShoppingListScreenView(
                     }
                 }
             }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Tap to move items, hold to delete",
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
     }
 }
@@ -367,7 +397,8 @@ fun ShoppingListScreenPreview() {
             onRemoveItem = {},
             onBackClick = {},
             onSettingsClick = {},
-            onDeleteItem = {}
+            onDeleteItem = {},
+            onClearRecentItems = {}
         )
     }
 }
