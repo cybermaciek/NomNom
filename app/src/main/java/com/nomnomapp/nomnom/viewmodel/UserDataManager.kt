@@ -64,4 +64,21 @@ object UserDataManager {
         }
         currentTheme = theme
     }
+
+    private const val SHOW_HINT_KEY = "show_shopping_list_hint"
+    var showShoppingListHint by mutableStateOf(true)
+
+    fun loadHintPreference(context: Context) {
+        val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        showShoppingListHint = sharedPref.getBoolean(SHOW_HINT_KEY, true)
+    }
+
+    fun setHintPreference(context: Context, show: Boolean) {
+        val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean(SHOW_HINT_KEY, show)
+            apply()
+        }
+        showShoppingListHint = show
+    }
 }

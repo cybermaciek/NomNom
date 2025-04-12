@@ -1,5 +1,11 @@
 package com.nomnomapp.nomnom.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -49,6 +55,8 @@ import androidx.navigation.NavController
 import com.nomnomapp.nomnom.ui.navigation.Routes
 import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.ShoppingListViewModel
+import com.nomnomapp.nomnom.viewmodel.UserDataManager
+import kotlinx.coroutines.delay
 
 @Composable
 fun ShoppingListScreen(
@@ -57,6 +65,16 @@ fun ShoppingListScreen(
     val context = LocalContext.current
     val viewModel: ShoppingListViewModel = remember {
         ShoppingListViewModel(context)
+    }
+
+    LaunchedEffect(Unit) {
+        UserDataManager.loadHintPreference(context)
+    }
+
+    var showHintWithDelay by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(300) // 300ms delay
+        showHintWithDelay = UserDataManager.showShoppingListHint
     }
 
     val toBuyItems by viewModel.itemsInCart.collectAsState(initial = emptyList())
@@ -73,7 +91,12 @@ fun ShoppingListScreen(
         onBackClick = { navController?.popBackStack() },
         onSettingsClick = { navController?.navigate(Routes.SETTINGS.route) },
         onDeleteItem = { viewModel.deleteItem(it) },
-        onClearRecentItems = { viewModel.clearRecentItems() }
+        onClearRecentItems = { viewModel.clearRecentItems() },
+        showHint = showHintWithDelay,
+        onDismissHint = {
+            UserDataManager.setHintPreference(context, false)
+            showHintWithDelay = false
+        }
     )
 }
 
@@ -88,7 +111,9 @@ fun ShoppingListScreenView(
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onDeleteItem: (String) -> Unit,
-    onClearRecentItems: () -> Unit
+    onClearRecentItems: () -> Unit,
+    showHint: Boolean,
+    onDismissHint: () -> Unit
 ) {
     Scaffold { contentPadding ->
         Column(
@@ -261,7 +286,7 @@ fun ShoppingListScreenView(
                                         onLongPress = { showDeleteDialog = true }
                                     )
                                 }
-                                .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(15.dp))
+                                .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(16.dp))
                                 .padding(12.dp)
                         ) {
                             Row(
@@ -348,7 +373,7 @@ fun ShoppingListScreenView(
                                         onLongPress = { showDeleteDialog = true }
                                     )
                                 }
-                                .background(MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(15.dp))
+                                .background(MaterialTheme.colorScheme.onBackground, shape = RoundedCornerShape(16.dp))
                                 .padding(12.dp)
                         ) {
                             Row(
@@ -369,16 +394,57 @@ fun ShoppingListScreenView(
                     }
                 }
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Tap to move items, hold to delete",
-                    fontSize = 10.sp,
-                    color = MaterialTheme.colorScheme.onBackground
+
+            AnimatedVisibility(
+                visible = showHint,
+                enter = slideInVertically(
+                    animationSpec = tween(durationMillis = 300),
+                    initialOffsetY = { fullHeight -> fullHeight } // Starts from bottom
+                ) + expandVertically(
+                    animationSpec = tween(durationMillis = 300),
+                    expandFrom = Alignment.Top
+                ),
+                exit = slideOutVertically(
+                    animationSpec = tween(durationMillis = 250),
+                    targetOffsetY = { fullHeight -> fullHeight } // Exits to bottom
+                ) + shrinkVertically(
+                    animationSpec = tween(durationMillis = 250),
+                    shrinkTowards = Alignment.Top
                 )
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 8.dp, bottom = 16.dp, end = 16.dp)
+                        .background(
+                            MaterialTheme.colorScheme.primary,
+                            RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(24.dp)
+                            .clickable { onDismissHint() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close hint",
+                            tint = MaterialTheme.colorScheme.background,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                    Text(
+                        text = "Tap to move items, hold item to delete",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.background
+                    )
+                }
             }
         }
     }
@@ -398,7 +464,9 @@ fun ShoppingListScreenPreview() {
             onBackClick = {},
             onSettingsClick = {},
             onDeleteItem = {},
-            onClearRecentItems = {}
+            onClearRecentItems = {},
+            showHint = true,
+            onDismissHint = {}
         )
     }
 }
