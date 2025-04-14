@@ -14,13 +14,15 @@ object ApiClient {
         .add(KotlinJsonAdapterFactory())
         .build()
 
+    // tzw. przechwytywacz zapytań HTTP, pobiera zapytania i loguje je
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BASIC
     }
-
+    //tworzenie klienta HTTP
     private val client = OkHttpClient.Builder()
         .addInterceptor(logging)
         .build()
+
 
     val mealApi: MealApi by lazy {
         Retrofit.Builder()

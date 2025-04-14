@@ -259,7 +259,7 @@ fun RecipeListScreenView(
                         onDeleteClick = { clickedRecipe ->
                             val id = recipe.id.removePrefix("user_").toIntOrNull()
                             if (id != null) {
-                                viewModel.deleteUserRecipeById(id) { /* opcjonalny onSuccess */ }
+                                viewModel.deleteUserRecipeById(id){}
                             }
                         }
                     )

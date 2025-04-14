@@ -2,6 +2,7 @@ package com.nomnomapp.nomnom.data.local
 
 import android.content.Context
 import androidx.room.Room
+import com.nomnomapp.nomnom.data.repository.RecipeRepository
 
 object DatabaseProvider {
     private var INSTANCE: AppDatabase? = null
@@ -13,8 +14,14 @@ object DatabaseProvider {
                 AppDatabase::class.java,
                 "nomnom_database"
             )
-            .fallbackToDestructiveMigration()
-            .build().also { INSTANCE = it }
+                .fallbackToDestructiveMigration() //pozwala usunac i odtworzyc baze przy zmianach
+                .build().also { INSTANCE = it }
         }
     }
+
+    fun provideRecipeRepository(context: Context): RecipeRepository {
+        val db = getDatabase(context)
+        return RecipeRepository(db.cachedRecipeDao())
+    }
+
 }
