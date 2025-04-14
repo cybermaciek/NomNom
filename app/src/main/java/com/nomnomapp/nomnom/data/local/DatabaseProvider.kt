@@ -14,8 +14,8 @@ object DatabaseProvider {
                 AppDatabase::class.java,
                 "nomnom_database"
             )
-            .fallbackToDestructiveMigration() // 🔥 To pozwala usunąć i odtworzyć bazę przy zmianach
-            .build().also { INSTANCE = it }
+                .fallbackToDestructiveMigration() //pozwala usunac i odtworzyc baze przy zmianach
+                .build().also { INSTANCE = it }
         }
     }
 

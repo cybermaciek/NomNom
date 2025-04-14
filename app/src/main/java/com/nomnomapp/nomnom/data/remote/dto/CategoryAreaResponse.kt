@@ -2,6 +2,8 @@ package com.nomnomapp.nomnom.data.remote.dto
 
 import com.squareup.moshi.Json
 
+//odwzorowanie struktury JSON-a, jaki przychodzi z API
+//przyklad jesli w JSON jest meals, przypisz to do pola name
 data class CategoryResponse(
     @Json(name = "meals") val categories: List<CategoryDto>
 )
