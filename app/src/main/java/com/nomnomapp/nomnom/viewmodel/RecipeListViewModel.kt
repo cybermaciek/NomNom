@@ -37,23 +37,37 @@ class RecipeListViewModel(
         loadFavorites()
     }
 
-    private fun loadFavorites() {
+
+    private val _favoriteRecipes = MutableStateFlow<List<Recipe>>(emptyList())
+    val favoriteRecipes: StateFlow<List<Recipe>> = _favoriteRecipes
+
+    fun loadFavorites() {
         viewModelScope.launch {
-            favoriteRepository.getAll().collect { list ->
-                _favoriteIds.value = list.map { it.recipeId }
+            favoriteRepository.getAllAsRecipes().collect { recipes ->
+                _favoriteRecipes.value = recipes
+                _favoriteIds.value = recipes.map { it.id }
             }
         }
     }
+
+
+
 
     fun toggleFavorite(id: String) {
         viewModelScope.launch {
             if (favoriteRepository.isFavorite(id)) {
                 favoriteRepository.remove(id)
             } else {
-                favoriteRepository.add(id)
+                val recipe = _recipes.value.find { it.id == id }
+                if (recipe != null) {
+                    favoriteRepository.add(recipe)
+                } else {
+                    Log.w("RECIPE_VM", "Nie znaleziono przepisu z id: $id")
+                }
             }
         }
     }
+
 
     fun loadAllRecipes() {
         viewModelScope.launch {

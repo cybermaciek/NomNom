@@ -105,14 +105,18 @@ fun RecipeListScreenView(
     var selectedCategory by remember { mutableStateOf("All") }
     var selectedArea by remember { mutableStateOf("All") }
     var showOnlyFavorites by remember { mutableStateOf(false) }
+    val favoriteRecipes by viewModel.favoriteRecipes.collectAsState()
 
-    val filteredRecipes = recipes.filter { recipe ->
-        recipe.title.contains(search, ignoreCase = true) &&
-                (selectedCategory == "All" || recipe.category == selectedCategory) &&
-                (selectedArea == "All" || recipe.area == selectedArea) &&
-                (!showOnlyFavorites || favoriteIds.contains(recipe.id)) &&
-                (!showOnlyUserRecipes || recipe.id.startsWith("user_"))
+    val filteredRecipes = when {
+        showOnlyFavorites -> favoriteRecipes
+        else -> recipes.filter { recipe ->
+            recipe.title.contains(search, ignoreCase = true) &&
+                    (selectedCategory == "All" || recipe.category == selectedCategory) &&
+                    (selectedArea == "All" || recipe.area == selectedArea) &&
+                    (!showOnlyUserRecipes || recipe.id.startsWith("user_"))
+        }
     }
+
 
     LaunchedEffect(search) {
         if (search.isNotBlank()) viewModel.searchRecipes(search) else viewModel.searchRecipes("")

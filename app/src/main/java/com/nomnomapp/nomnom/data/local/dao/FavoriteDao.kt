@@ -10,20 +10,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FavoriteDao {
-    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFavorite(favorite: FavoriteEntity)
 
-    @Delete
-    suspend fun removeFavorite(favorite: FavoriteEntity)
+    @Query("DELETE FROM favorites WHERE id = :id")
+    suspend fun removeFavoriteById(id: String)
 
-    @Query("SELECT * FROM favorites")
-    fun getAllFavorites(): Flow<List<FavoriteEntity>>
-
-    @Query("SELECT EXISTS(SELECT * FROM favorites WHERE recipeId = :id)")
+    @Query("SELECT EXISTS(SELECT * FROM favorites WHERE id = :id)")
     suspend fun isFavorite(id: String): Boolean
 
     @Query("SELECT * FROM favorites")
-    suspend fun getAllFavoriteEntities(): List<FavoriteEntity>
-
-
+    fun getAll(): kotlinx.coroutines.flow.Flow<List<FavoriteEntity>>
 }

@@ -18,7 +18,7 @@ import com.nomnomapp.nomnom.data.local.entity.UserRecipe
         ShoppingItem::class,
         CachedRecipeEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

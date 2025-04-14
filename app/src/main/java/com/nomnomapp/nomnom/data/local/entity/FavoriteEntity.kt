@@ -5,5 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "favorites")
 data class FavoriteEntity(
-    @PrimaryKey val recipeId: String
+    @PrimaryKey val id: String,
+    val title: String,
+    val imageUrl: String,
+    val instructions: String,
+    val ingredients: String,
+    val category: String,
+    val area: String
 )
