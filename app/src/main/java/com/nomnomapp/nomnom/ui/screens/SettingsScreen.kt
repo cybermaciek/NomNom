@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -304,42 +302,4 @@ fun rememberNavControllerVisibility(
     }
 
     return isVisible
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
-@Composable
-fun Settings_LightmodePreview() {
-    val dummyVideoUri = remember {
-        Uri.parse("android.resource://com.nomnomapp.nomnom/${R.raw.video}")
-    }
-
-    NomNomTheme {
-        SettingsScreenView(
-            onBackClick = {},
-            onEditProfileClick = {},
-            videoUri = dummyVideoUri,
-            isScreenVisible = true,
-            viewModel = SettingsViewModel(),
-            context = LocalContext.current
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-@Composable
-fun Settings_DarkmodePreview() {
-    val dummyVideoUri = remember {
-        Uri.parse("android.resource://com.nomnomapp.nomnom/${R.raw.video}")
-    }
-
-    NomNomTheme {
-        SettingsScreenView(
-            onBackClick = {},
-            onEditProfileClick = {},
-            videoUri = dummyVideoUri,
-            isScreenVisible = true,
-            viewModel = SettingsViewModel(),
-            context = LocalContext.current
-        )
-    }
 }

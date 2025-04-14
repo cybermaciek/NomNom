@@ -1,7 +1,6 @@
 package com.nomnomapp.nomnom.ui.screens
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,11 +23,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nomnomapp.nomnom.R
-import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.UserDataManager
 
 @Composable
@@ -201,28 +198,3 @@ fun HomeScreen(
         }
     })
 }
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
-@Composable
-fun Home_LightmodePreview() {
-    NomNomTheme {
-        HomeScreen(
-            onNavigateToRecipes = {},
-            onNavigateToSettings = {},
-            onNavigateToShoppingList = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-@Composable
-fun Home_DarkmodePreview() {
-    NomNomTheme {
-        HomeScreen(
-            onNavigateToRecipes = {},
-            onNavigateToSettings = {},
-            onNavigateToShoppingList = {}
-        )
-    }
-}
-

@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 class RecipeRepository(private val dao: CachedRecipeDao) {
     private val api = ApiClient.mealApi
 
-
     suspend fun searchRecipes(query: String): List<Recipe> = withContext(Dispatchers.IO) {
         val response = api.searchMealsByName(query)
         response.meals?.map(::mapMealDtoToRecipe) ?: emptyList()
@@ -53,8 +52,6 @@ class RecipeRepository(private val dao: CachedRecipeDao) {
         )
     }
 
-
-
     suspend fun cacheRecipes(recipes: List<Recipe>) {
         dao.clearAll()
         recipes.take(10).forEach {
@@ -85,5 +82,4 @@ class RecipeRepository(private val dao: CachedRecipeDao) {
             )
         }
     }
-
 }

@@ -1,16 +1,9 @@
 package com.nomnomapp.nomnom.ui.screens
 
-import android.content.res.Configuration
 import android.media.MediaPlayer
-import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,21 +29,15 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.nomnomapp.nomnom.model.Recipe
 import com.nomnomapp.nomnom.ui.navigation.Routes
-import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.math.cos
-import kotlin.math.sin
 import com.nomnomapp.nomnom.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nomnomapp.nomnom.data.local.DatabaseProvider
 import com.nomnomapp.nomnom.data.repository.FavoriteRepository
 import com.nomnomapp.nomnom.data.repository.LocalRecipeRepository
@@ -361,12 +347,14 @@ fun RecipeCard(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             recipe.title,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground
         )
+
         HorizontalDivider(
             thickness = 2.dp,
             color = MaterialTheme.colorScheme.onBackground,
@@ -502,25 +490,5 @@ fun AnimatedFavoriteIcon(
             contentDescription = "Favorite",
             tint = heartColor
         )
-    }
-}
-
-
-
-
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
-@Composable
-fun Recipe_List_LightmodePreview() {
-    NomNomTheme {
-        RecipeListScreen(onNavigateToMealDetail = {}, navController = NavController(LocalContext.current))
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-@Composable
-fun Recipe_List_DarkmodePreview() {
-    NomNomTheme {
-        RecipeListScreen(onNavigateToMealDetail = {}, navController = NavController(LocalContext.current))
     }
 }

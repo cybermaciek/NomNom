@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.nomnomapp.nomnom.viewmodel.UserDataManager
 
 class SettingsViewModel : ViewModel() {
     var selectedTheme by mutableStateOf(UserDataManager.currentTheme.value)

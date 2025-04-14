@@ -1,11 +1,9 @@
 package com.nomnomapp.nomnom.model
 
-import android.content.Context
 import android.net.Uri
 import android.widget.VideoView
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,7 +19,6 @@ fun VideoPlayer(
     cornerRadius: Float = 16f,
     isVisible: Boolean = true
 ) {
-    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var videoView: VideoView? by remember { mutableStateOf(null) }
 

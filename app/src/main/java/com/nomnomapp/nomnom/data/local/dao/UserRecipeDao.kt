@@ -1,6 +1,5 @@
 package com.nomnomapp.nomnom.data.local.dao
 
-import android.util.Log
 import androidx.room.*
 import com.nomnomapp.nomnom.data.local.entity.UserRecipe
 import kotlinx.coroutines.flow.Flow

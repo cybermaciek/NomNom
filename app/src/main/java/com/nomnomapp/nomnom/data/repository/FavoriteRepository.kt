@@ -7,6 +7,5 @@ class FavoriteRepository(private val dao: FavoriteDao) {
     suspend fun add(recipeId: String) = dao.addFavorite(FavoriteEntity(recipeId))
     suspend fun remove(recipeId: String) = dao.removeFavorite(FavoriteEntity(recipeId))
     suspend fun isFavorite(id: String) = dao.isFavorite(id)
-    suspend fun getAll() = dao.getAllFavorites()
-
+    fun getAll() = dao.getAllFavorites()
 }

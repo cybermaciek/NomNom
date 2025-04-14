@@ -1,8 +1,6 @@
 package com.nomnomapp.nomnom.ui.screens
 
-
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -30,14 +28,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.ui.utilities.resizeBitmap
 import com.nomnomapp.nomnom.viewmodel.UserDataManager
 import java.io.IOException
-
 
 @Composable
 fun CreateUserScreen(
@@ -46,7 +41,6 @@ fun CreateUserScreen(
 ) {
     var yourName by remember { mutableStateOf("") }
     var selectedImage by remember { mutableStateOf<Bitmap?>(null) }
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -178,25 +172,5 @@ fun CreateUserScreen(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Theme")
-@Composable
-fun CreateUser_LightmodePreview() {
-    NomNomTheme {
-        CreateUserScreen(
-            onNavigateToHome = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Theme")
-@Composable
-fun CreateUser_DarkmodePreview() {
-    NomNomTheme {
-        CreateUserScreen(
-            onNavigateToHome = {}
-        )
     }
 }

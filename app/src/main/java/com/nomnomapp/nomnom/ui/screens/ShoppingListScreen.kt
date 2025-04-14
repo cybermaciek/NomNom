@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -46,14 +45,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nomnomapp.nomnom.ui.navigation.Routes
-import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.ShoppingListViewModel
 import com.nomnomapp.nomnom.viewmodel.UserDataManager
 import kotlinx.coroutines.delay
@@ -447,26 +443,5 @@ fun ShoppingListScreenView(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ShoppingListScreenPreview() {
-    NomNomTheme {
-        ShoppingListScreenView(
-            toBuyItems = listOf("Apples", "Milk", "Bread"),
-            recentItems = listOf("Eggs", "Cheese", "Pasta"),
-            searchQuery = "",
-            onSearchQueryChanged = {},
-            onAddItem = {},
-            onRemoveItem = {},
-            onBackClick = {},
-            onSettingsClick = {},
-            onDeleteItem = {},
-            onClearRecentItems = {},
-            showHint = true,
-            onDismissHint = {}
-        )
     }
 }
