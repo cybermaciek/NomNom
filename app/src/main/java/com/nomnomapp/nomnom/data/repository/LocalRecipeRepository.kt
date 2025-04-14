@@ -14,5 +14,6 @@ class LocalRecipeRepository(private val dao: UserRecipeDao) {
             dao.delete(recipe)
         }
     }
+    
     suspend fun updateRecipe(recipe: UserRecipe) = dao.update(recipe)
 }
