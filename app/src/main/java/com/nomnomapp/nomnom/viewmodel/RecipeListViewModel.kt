@@ -63,7 +63,7 @@ class RecipeListViewModel(
                 _usingCache.value = false
                 fromApi
             } catch (e: Exception) {
-                Log.w("RECIPE_VM", "Brak internetu – używam cache: ${e.message}")
+                Log.w("RECIPE_VM", "Brak internetu – uzywam cache: ${e.message}")
                 _usingCache.value = true
                 apiRepository.getCachedRecipes()
             }
@@ -103,7 +103,7 @@ class RecipeListViewModel(
                 _categories.value = listOf("All") + apiRepository.getCategories()
                 _areas.value = listOf("All") + apiRepository.getAreas()
             } catch (e: Exception) {
-                Log.w("RECIPE_VM", "Nie udało sie załadować filtrów: ${e.message}")
+                Log.w("RECIPE_VM", "Nie udalo sie zaladować filtrow: ${e.message}")
             }
         }
     }

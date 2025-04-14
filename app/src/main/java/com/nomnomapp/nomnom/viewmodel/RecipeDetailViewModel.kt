@@ -33,11 +33,21 @@ class RecipeDetailViewModel(
                     val userRecipe = localRepository.getRecipeById(localId)
                     _mealState.value = userRecipe?.toRecipe()
                 } else {
-                    val apiRecipe = apiRepository.getMealById(mealId)
+                    val apiRecipe = try {
+                        apiRepository.getMealById(mealId)
+                    } catch (e: Exception) {
+                        //z cache
+                        apiRepository.getCachedRecipes().find { it.id == mealId }
+                    }
+
                     _mealState.value = apiRecipe
+
+                    if (apiRecipe == null) {
+                        _errorMessage.value = "Offline – no cached data available"
+                    }
                 }
             } catch (e: Exception) {
-                _errorMessage.value = e.message
+                _errorMessage.value = "Unexpected error: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

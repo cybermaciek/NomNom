@@ -14,7 +14,7 @@ object ApiClient {
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    // tzw. przechwytywacz zapytań HTTP, pobiera zapytania i loguje je
+    // przechuwtuje zapytania HTTP, pobiera zapytania i loguje je
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BASIC
     }
