@@ -3,7 +3,6 @@ package com.nomnomapp.nomnom.ui.screens
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -30,7 +28,6 @@ import androidx.navigation.NavController
 import com.nomnomapp.nomnom.R
 import com.nomnomapp.nomnom.model.VideoPlayer
 import com.nomnomapp.nomnom.ui.navigation.Routes
-import com.nomnomapp.nomnom.ui.theme.NomNomTheme
 import com.nomnomapp.nomnom.viewmodel.SettingsViewModel
 
 @Composable

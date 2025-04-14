@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Routes.MEAL_DETAIL.route,
                         arguments = listOf(navArgument("mealId") { type = NavType.StringType })
-                    ) { backStackEntry ->  // Fixed: Added proper parameter name
+                    ) { backStackEntry ->
                         val mealId = backStackEntry.arguments?.getString("mealId") ?: ""
                         val context = LocalContext.current
                         val db = remember { com.nomnomapp.nomnom.data.local.DatabaseProvider.getDatabase(context) }
